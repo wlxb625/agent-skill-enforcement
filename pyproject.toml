@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "asep-validator"
-version = "0.2.0"
-description = "Reference validator for the Agent Skill Enforcement Protocol (ASEP)"
+version = "0.3.0"
+description = "Validate Agent Skills with optional Agent Skill Enforcement adherence profiles"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}

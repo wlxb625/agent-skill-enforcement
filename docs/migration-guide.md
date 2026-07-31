@@ -1,45 +1,26 @@
-# Migrating an existing Agent Skill
+# Migrating an existing Skill
 
 ## Before
 
 ```text
 my-skill/
 ├── SKILL.md
-├── scripts/
 ├── references/
-└── templates/
+├── scripts/
+└── assets/
 ```
 
-## After
+Keep this structure.
 
-```text
-my-skill/
-├── SKILL.md
-├── EXECUTION.yaml
-├── constitution/immutable.yaml
-├── adaptive/default-policy.yaml
-├── stages/
-├── gates/
-├── evaluators/
-├── schemas/
-├── scripts/
-├── references/
-└── templates/
-```
+## Migration steps
 
-## Migration questions
+1. Identify instructions the agent often ignores or replaces with defaults.
+2. Move detailed explanations into focused files under `references/`.
+3. Separate hard requirements, core methods, quality targets, and preferences in `SKILL.md`.
+4. Add prohibited shortcuts and false substitutes.
+5. Add current-task interpretation instructions.
+6. Add output review and targeted revision instructions.
+7. Optionally create `references/adherence.yaml`.
+8. Run `asep validate ./my-skill`.
 
-1. Which steps are genuinely mandatory?
-2. Which rules are professional invariants?
-3. Which rules are only preferences or guidance?
-4. What artifact proves each stage happened?
-5. What can be checked deterministically?
-6. What requires semantic evaluation?
-7. What evidence must support a score?
-8. What happens after failure?
-9. What must be true before final delivery?
-10. What can the host actually enforce?
-
-## Common mistake
-
-Do not copy an entire domain checklist into immutable policy. Protect only the rules that must never be weakened. Domain-specific quality rubrics belong in gates and evaluators.
+No new top-level package structure is required.

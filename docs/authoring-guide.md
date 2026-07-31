@@ -1,41 +1,56 @@
 # Authoring guide
 
-## 1. Start with an existing Skill
+## Start from an ordinary Skill
 
-Keep `SKILL.md` concise and useful for ordinary hosts. Agent Skill Enforcement should extend, not replace, the basic Skill experience.
+Create or keep the normal structure:
 
-## 2. Extract invariants
+```text
+my-skill/
+├── SKILL.md
+├── references/
+├── scripts/
+└── assets/
+```
 
-List rules that must not be weakened by user preference or model interpretation. Put only true invariants in the immutable layer.
+Do not begin by adding protocol-specific directories.
 
-## 3. Classify rules
+## 1. Separate requirement strength
 
-For every rule choose `hard`, `gate`, `preference`, or `guidance`.
+Rewrite mixed guidance into four groups:
 
-## 4. Define stages around durable artifacts
+- hard requirements;
+- core methods;
+- quality targets;
+- preferences.
 
-A good stage produces an artifact that can be validated and reviewed. Avoid stages that represent only hidden thought.
+## 2. Name prohibited substitutions
 
-## 5. Write output schemas
+For each important requirement, ask: what is the easiest default pattern an agent might use while claiming it followed this rule?
 
-Schemas should capture evidence and references, not only labels and scores.
+Write those substitutions explicitly.
 
-## 6. Separate validators, evaluators, and gates
+## 3. Link required references directly
 
-Do not let an evaluator directly advance state. The gate should interpret results according to immutable policy.
+List required files in `SKILL.md`. Keep detailed content in `references/` so agents load only what they need.
 
-## 7. Add repair routes
+## 4. Require current-task interpretation
 
-For each failure, declare whether to retry the current stage, return upstream, request user input, or stop.
+Before generating the relevant artifact, instruct the agent to translate the general requirement into a concrete decision for the current task.
 
-## 8. Define completion
+This should be a compact planning artifact, not private chain-of-thought disclosure.
 
-List required stages, gates, artifacts, hashes, and minimum evaluator attestation.
+## 5. Keep requirements active
 
-## 9. Add negative tests
+During long tasks, instruct the agent to reload or restate only the requirements relevant to the current component or revision.
 
-Create artifacts that should fail: missing evidence, fake IDs, low counts, skipped stages, threshold downgrade patches, and hollow semantic outputs.
+## 6. Review actual output
 
-## 10. Declare limitations
+Review rendered pages, complete writing, actual code, or other real artifacts. Do not accept an explanation of the output as a substitute for inspecting it.
 
-State which guarantees require host support and which remain model-dependent.
+## 7. Revise selectively
+
+Preserve compliant parts and repair the parts that drifted from the Skill.
+
+## 8. Add the optional profile
+
+Add `references/adherence.yaml` when machine validation, tooling, or shared templates would be useful.

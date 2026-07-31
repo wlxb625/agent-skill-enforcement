@@ -1,207 +1,188 @@
-# Agent Skill Enforcement Protocol (ASEP) 0.2.0-draft
+# Agent Skill Enforcement Profile (ASEP) 0.3.0-draft
 
 ## 1. Scope
 
-ASEP is an optional enforcement extension for folder-based Agent Skills. An ASEP package remains an ordinary Skill with `SKILL.md`; it adds `EXECUTION.yaml` and related resources that declare when a lifecycle may advance and when completion may be claimed.
+ASEP is an optional adherence profile for folder-based Agent Skills. It extends the existing Skill authoring model without replacing its standard structure.
 
-This specification defines:
+An ASEP-enhanced Skill:
 
-- enforcement metadata and runtime claim levels;
-- stage locks and transition rules;
-- required artifacts and deterministic validation;
-- semantic evaluation and attestation;
-- blocking gates and applicability;
-- repair and return routes;
-- protected rules and bounded adaptation;
-- completion receipts and audit evidence.
+- keeps `SKILL.md` as the primary entry point;
+- uses normal `references/`, `scripts/`, and `assets/` directories;
+- separates non-optional requirements from general guidance;
+- names prohibited substitutions and default-pattern shortcuts;
+- asks the agent to interpret requirements for the current task;
+- keeps relevant requirements active during generation;
+- reviews the actual result for drift and requests targeted revision;
+- may include `references/adherence.yaml` for machine validation.
 
-ASEP does not define domain quality standards. A screenplay Skill, audit Skill, coding Skill, or research Skill supplies its own evaluators and gate criteria.
+ASEP does not require a workflow engine, state machine, completion receipt, or new top-level package format. Those mechanisms are optional extensions for tasks that need stronger process control.
 
-## 2. Normative language
+## 2. Compatibility principle
 
-The terms MUST, MUST NOT, REQUIRED, SHOULD, SHOULD NOT, and MAY are normative.
+ASEP MUST extend, not replace, the Agent Skills format.
 
-## 3. Required package files
-
-An Enforced Skill MUST contain:
+The only universally required package file remains:
 
 ```text
 SKILL.md
-EXECUTION.yaml
-constitution/immutable.yaml
 ```
 
-It MAY contain adaptive policy, stage instructions, artifact schemas, validators, evaluators, gate definitions, state scripts, references, and templates.
+ASEP-enhanced Skills SHOULD use the standard optional directories when applicable:
 
-## 4. Enforcement declaration
+```text
+references/
+scripts/
+assets/
+```
 
-`EXECUTION.yaml` MUST contain an `enforcement` object:
+New top-level directories MUST NOT be required when an existing Agent Skills directory can express the same purpose.
+
+## 3. SKILL.md authoring profile
+
+An ASEP-enhanced `SKILL.md` SHOULD make the following concerns explicit. Exact heading names MAY vary by language and domain.
+
+### 3.1 Required references
+
+The Skill SHOULD directly list supporting files that must be read before or during execution.
+
+### 3.2 Core requirements
+
+Non-optional professional methods MUST be separated from preferences and general advice.
+
+Recommended levels:
+
+- `hard`: violation means the result does not follow the Skill;
+- `core`: central to the Skill's distinctive method;
+- `quality`: important quality target that may admit contextual trade-offs;
+- `preference`: adaptable user or project preference.
+
+### 3.3 Prohibited patterns
+
+The Skill SHOULD identify common default patterns, shortcuts, or substitutions that do not satisfy the requirement.
+
+### 3.4 Application instructions
+
+The Skill SHOULD require the agent to translate relevant requirements into decisions for the current task before generating the affected artifact.
+
+### 3.5 Review and revision
+
+The Skill SHOULD instruct the agent to inspect the actual output against the Skill's criteria and revise drifted parts while preserving parts that already comply.
+
+## 4. Optional adherence profile
+
+A Skill MAY include:
+
+```text
+references/adherence.yaml
+```
+
+The file is optional and supplements, rather than replaces, the Markdown instructions.
+
+Minimal example:
 
 ```yaml
-enforcement:
+profile:
   protocol: ASEP
-  spec_version: "0.2.0-draft"
-  kind: enforced-agent-skill
-  name: example-skill
-  version: "0.2.0"
+  spec_version: 0.3.0-draft
+  mode: strict
+  skill: example-skill
+
+required_references:
+  - references/core-requirements.md
+
+requirements:
+  - id: primary-method
+    level: hard
+    statement: The primary domain method that must be followed.
+    prohibited_substitutions:
+      - a common shortcut that does not satisfy the method
+
+application:
+  interpret_for_current_task: true
+  keep_relevant_requirements_active: true
+
+review:
+  required: true
+  criteria: references/quality-criteria.md
+  revise_drifted_parts: true
 ```
 
-`kind` MUST be `enforced-agent-skill`. A runtime MUST NOT claim ASEP execution when this declaration is absent or invalid.
+## 5. Requirement semantics
 
-## 5. Compatibility and fallback
+Each structured requirement MUST contain:
 
-A package declares how it behaves when ASEP is unsupported:
+- a unique `id`;
+- a `level`;
+- a concrete `statement`.
 
-```yaml
-compatibility:
-  ordinary_skill: true
-  fallback_mode: soft-enforcement
-  minimum_execution_level: L1
-```
+A requirement MAY also declare:
 
-Allowed fallback modes:
+- `source`: the Markdown file or section that explains it;
+- `applies_to`: artifact or task categories;
+- `prohibited_substitutions`: easier patterns that do not satisfy it;
+- `review_questions`: questions used to detect drift.
 
-- `ordinary-skill`: ignore ASEP resources and use `SKILL.md` only;
-- `soft-enforcement`: expose the obligations to the model without claiming host enforcement;
-- `block`: refuse execution below the required level.
+A `strict` profile MUST contain at least one `hard` or `core` requirement.
 
-A runtime MUST report the effective level:
+## 6. Required references
 
-- `L0`: ordinary Skill only;
-- `L1`: obligations are declared but transitions are model-managed;
-- `L2`: bundled scripts or a runner can reject invalid transitions and completion;
-- `L3`: the host owns state, permissions, evaluator isolation, gates, and finalization.
+Every path in `required_references` MUST exist within the Skill package. `SKILL.md` SHOULD directly mention each required reference so ordinary Skills-compatible agents can discover it through progressive disclosure.
 
-A runtime MUST NOT claim a higher level than it actually provided.
+## 7. Application behavior
 
-## 6. Enforcement lifecycle
+When `interpret_for_current_task` is true, the agent SHOULD convert relevant abstract requirements into concrete task decisions before generating the affected artifact.
 
-The canonical lifecycle is:
+When `keep_relevant_requirements_active` is true, the agent SHOULD reload or reintroduce the subset of requirements relevant to the current artifact, component, or revision. This is intended to reduce requirement loss during long tasks.
 
-```text
-activate → prepare → submit → validate → evaluate → gate → transition → finalize
-```
+ASEP does not dictate the exact internal reasoning format and does not require revealing private chain of thought.
 
-A host MAY implement this using a state machine, graph, hooks, scripts, or another execution engine. The semantics, not a specific engine, are normative.
+## 8. Review behavior
 
-## 7. Stage locks
+Review is for detecting Skill drift.
 
-`state.start_stage` identifies the initial authorized stage. Each stage MAY declare instructions, input/output schemas, allowed tools, gates, and repair limits.
+When `review.required` is true, the agent SHOULD compare the actual output—not only its description—against the declared criteria.
 
-A conforming L2 or L3 runtime MUST reject:
+For visual or interactive work, review SHOULD inspect rendered output when the host supports it. For code, review SHOULD inspect relevant files and run appropriate deterministic checks. For writing, review SHOULD inspect the completed text rather than only an outline or self-summary.
 
-- submission to a stage that is not currently authorized;
-- progression when required output is missing or invalid;
-- progression when a required gate did not return `PASS`;
-- finalization before completion requirements are satisfied.
+When `revise_drifted_parts` is true, revision SHOULD target failed requirements while preserving already satisfactory parts.
 
-## 8. Validators, evaluators, and gates
+## 9. Scripts
 
-ASEP separates three concepts:
+Deterministic helpers SHOULD be stored in `scripts/`. Scripts MAY validate structure, run tests, render artifacts, capture screenshots, or detect mechanical anti-patterns.
 
-### 8.1 Validator
+A script cannot by itself guarantee semantic or aesthetic quality. Its role is to strengthen checks that can be made deterministically.
 
-A validator checks deterministic facts: schema, counts, references, file existence, hashes, stage identity, permission declarations, or other mechanically testable conditions.
+## 10. Assets
 
-### 8.2 Evaluator
+Templates, examples, design tokens, screenshots, starter files, and other reusable resources SHOULD remain in `assets/`.
 
-An evaluator judges semantic quality. It SHOULD cite evidence locations and MUST declare an attestation level:
+## 11. Optional workflow enforcement
 
-```text
-self_assessed < separate_context < separate_model < human_verified
-```
+Complex Skills MAY add staged workflows, gates, state, or completion controls. These are optional and MUST NOT be presented as required for the core ASEP adherence profile.
 
-### 8.3 Gate
+See `docs/optional-workflow-enforcement.md`.
 
-A gate combines validator and evaluator results and returns:
+## 12. Conformance
 
-- `PASS`: progression is permitted;
-- `CONDITIONAL`: repair is required before progression;
-- `FAIL`: progression is blocked and execution returns or terminates according to the declared route;
-- `NOT_APPLICABLE`: allowed only when the gate declares applicability rules and supplies evidence that those rules are unmet.
+A package conforms to the ASEP core profile when:
 
-A hard failure MUST override aggregate scores.
+- `SKILL.md` has valid Agent Skills frontmatter;
+- an optional `references/adherence.yaml` conforms to the schema;
+- referenced files and scripts exist;
+- requirement IDs are unique;
+- a strict profile contains at least one hard or core requirement.
 
-## 9. Gate composition
+Conformance means the package is well-formed. It does not guarantee that every agent will perfectly follow the Skill.
 
-Gates MAY use:
+## 13. Migration from 0.2
 
-- `ALL`: every required component passes;
-- `ANY`: at least one valid path passes;
-- `WEIGHTED`: a minimum aggregate score is met;
-- hard-failure override.
+ASEP 0.3 changes the project center of gravity:
 
-Domain rubrics are not part of the universal protocol.
+- standard Agent Skills structure becomes the default;
+- `EXECUTION.yaml` is no longer required;
+- `constitution/`, `gates/`, `evaluators/`, and `stages/` are no longer core directories;
+- `references/adherence.yaml` becomes the optional machine-readable profile;
+- Skill adherence during generation becomes the core;
+- workflow state, blocking completion, and receipts become optional advanced mechanisms.
 
-## 10. Repair routes
-
-A `CONDITIONAL` or `FAIL` result SHOULD produce a repair contract containing:
-
-```yaml
-repair:
-  failed_dimensions: []
-  preserve: []
-  must_change: []
-  return_to_stage: stage-id
-```
-
-A runtime MUST follow the declared transition rather than silently advancing to a later stage.
-
-## 11. Protected rules and bounded adaptation
-
-ASEP MAY use layered policies, but layering is a protection mechanism rather than the primary abstraction.
-
-The immutable layer protects enforcement-critical fields such as required stages, required gates, thresholds, allowed transitions, permissions, and completion conditions. Adaptive and task policies MAY specialize behavior but MUST NOT weaken protected rules.
-
-Recommended priority:
-
-```text
-immutable enforcement rules
-  > adaptive user/project policy
-    > current task policy
-      > model-local decisions
-```
-
-Policy updates SHOULD be expressed as validated patches and checked for protected-path overlap.
-
-## 12. Completion
-
-Completion MUST be receipt-backed. A receipt MUST include:
-
-- protocol and specification version;
-- package and artifact identity;
-- effective enforcement level;
-- completed required stages;
-- required gate results;
-- attestation levels;
-- artifact hashes or equivalent evidence;
-- final marker `ASEP_COMPLETE`.
-
-A runtime MUST NOT issue `ASEP_COMPLETE` when a required stage or gate is missing, failed, stale, or below the declared minimum attestation.
-
-## 13. Audit events
-
-A runtime SHOULD record activation, stage opening, submission, validation, evaluation, gate decision, repair, transition, and finalization events. Audit logs SHOULD bind events to artifact versions or hashes.
-
-## 14. Security
-
-Third-party scripts are untrusted code. Hosts SHOULD use least privilege, sandbox execution, restrict network/filesystem access, and require explicit permission grants. Declaring a tool or permission in `EXECUTION.yaml` does not grant it.
-
-## 15. Conformance
-
-A package-level validator can verify structure, references, graphs, policy boundaries, and receipt requirements. Strong semantic guarantees require host-side evaluator isolation or human verification.
-
-A conforming implementation SHOULD publish valid and invalid fixtures and MUST distinguish package conformance from actual runtime enforcement.
-
-## 16. Legacy draft migration
-
-`Contract Skills 0.1.0-draft` was the early project name. ASEP 0.2.0-draft changes:
-
-- project name to Agent Skill Enforcement;
-- top-level `contract_skill` to `enforcement`;
-- `kind: contract-skill` to `kind: enforced-agent-skill`;
-- CLI `contract-skill` to `asep`;
-- completion marker `CONTRACT_COMPLETE` to `ASEP_COMPLETE`;
-- fallback `soft-contract` to `soft-enforcement`.
-
-See `docs/migration-from-contract-skills.md`.
+See `docs/migration-from-v0.2.md`.

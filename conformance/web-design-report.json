@@ -1,14 +1,14 @@
 {
-  "package": "/mnt/data/agent-skill-enforcement-v0.3.0-draft/examples/minimal-adherence-skill",
+  "package": "/mnt/data/agent-skill-enforcement-v0.3.0-draft/examples/web-design-adherence-skill",
   "valid": true,
   "summary": {
-    "skill": "concise-project-brief",
+    "skill": "cinematic-web-designer",
     "profile": "strict",
     "spec_version": "0.3.0-draft",
-    "requirements": 3,
+    "requirements": 4,
     "levels": {
       "hard": 2,
-      "core": 0,
+      "core": 1,
       "quality": 1,
       "preference": 0
     },

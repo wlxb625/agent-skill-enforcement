@@ -1,133 +1,183 @@
-# Agent Skill Enforcement｜Agent Skill 强制执行规范
+# Agent Skill Enforcement｜让AI真正按照Skill来做
 
-**一种面向可移植 Agent Skills 的强执行扩展。**
+**解决“明明调用了Skill，结果却还是模型默认套路”的问题。**
 
-Agent Skill Enforcement 定义了 **Agent Skill Enforcement Protocol（ASEP）**。它把 Skill 中的专业方法和流程要求，从“供 AI 参考的说明”升级为可以阻止跳步、阻止错误推进、要求返修并限制最终交付的生命周期义务。
+Agent Skill Enforcement定义了实验性的 **ASEP** 写作与校验方式。它不重新发明一种Skill格式，而是继续使用原有的`SKILL.md`、`references/`、`scripts/`和`assets/`，把Skill中的核心方法、禁止替代方式、检查要求和返修方式写得更清楚，让AI在理解、决策、生成和修改时更难把它们悄悄忽略。
 
-> 普通 Skills 描述应该怎样做。  
-> 强执行 Skills 控制任务是否允许继续，以及是否有资格宣布完成。
+> 普通Skill让AI读取一套方法。  
+> ASEP让这些方法在AI生成过程中持续生效。
 
-ASEP 保留普通 Agent Skill 的文件夹形态与 `SKILL.md` 入口，在旁边增加机器可读的 `EXECUTION.yaml`，用于声明阶段锁、必需产物、验证器、语义评估器、阻断式门禁、返修路径、受保护规则、审计记录和完成凭证。
+ASEP不取代Agent Skills，也不要求先安装一个新的Agent运行框架。经过ASEP增强的包仍然是普通、可移植的Skill；不认识ASEP的Agent仍然能读取Markdown，支持ASEP的工具则可以进一步校验可选的结构化遵循配置。
 
-本项目是独立的社区实验，**不是 Agent Skills 官方规范的新版本**。
+本项目是独立的社区实验，**不是Agent Skills官方规范的新版本**。
 
-[English](README.md) · [ASEP 规范](SPEC.md) · [作者指南](docs/authoring-guide.md) · [迁移指南](docs/migration-guide.md) · [常见问题](docs/faq.md)
+[English](README.md) · [规范草案](SPEC.md) · [编写指南](docs/authoring-guide.md) · [示例](examples/) · [常见问题](docs/faq.md)
 
 ## 它解决什么问题
 
-普通 Skill 可以写得非常完整，但 AI 仍可能：
+一个Skill可以写得很专业，但AI加载以后，仍然可能按照自己最熟悉的默认模式生成。
 
-- 选择性读取规则；
-- 跳过中间阶段；
-- 自行降低评分阈值；
-- 门禁失败后继续写最终稿；
-- 用自评代替真实检查；
-- 没有完成流程就宣布交付。
+例如网站设计Skill已经要求：
 
-ASEP 将这些要求变成可执行生命周期：
+- 不要把卡片网格作为主要页面结构；
+- 滚动必须改变空间、焦点或叙事状态；
+- 图片和视频必须承担信息表达；
+- 不能把重复淡入当作主要动效系统。
+
+AI最后却还是做出：深色背景、大标题、卡片、渐变，以及每个区块相同的进入动画。
+
+形式上Skill被调用了，真正决定质量的方法却没有充分参与生成。
+
+ASEP针对的正是这一段偏差：
 
 ```text
-激活
-→ 只开放当前允许阶段
-→ 提交必需产物
-→ 验证确定性事实
-→ 评估语义质量
-→ 执行阻断式门禁
-   ├─ PASS：进入下一阶段
-   ├─ CONDITIONAL：返修
-   └─ FAIL：退回或终止
-→ 只有合法完成凭证才能最终交付
+Skill说明
+→ 提取不可忽略的要求
+→ 转换为当前任务的具体原则
+→ 生成时持续保留相关要求
+→ 按Skill检查实际结果
+→ 定向修改偏离部分
 ```
 
-## 和普通 Skills 有什么不同
+AI仍然可以自主选择工具、技术和实现方式，但不能悄悄用更容易的默认套路替代Skill的核心方法。
 
-| 能力 | 普通 Agent Skill | ASEP 强执行 Skill |
+## 和普通Skills有什么不同
+
+| 能力 | 普通Agent Skill | ASEP增强Skill |
 |---|---|---|
-| 可下载的文件夹包 | 支持 | 支持 |
-| `SKILL.md` 方法说明 | 支持 | 支持 |
-| 机器可读生命周期 | 通常是自然语言 | 由 `EXECUTION.yaml` 声明 |
-| 阶段推进 | AI自行决定 | 可以锁定阶段 |
-| 阶段产物 | 多为建议 | 必须通过 Schema |
-| 质量检查 | 可被忽略 | 门禁可以阻止推进 |
-| 失败处理 | AI临时决定 | 预先声明返修和退回路径 |
-| 专业底线 | 容易被重新解释 | 下层规则不能削弱 |
-| 完成判定 | AI认为写完 | 必须生成 `ASEP_COMPLETE` 凭证 |
-| 可审计性 | 依赖平台 | 记录阶段、证据和门禁结果 |
+| 标准`SKILL.md`结构 | 支持 | 完全保留 |
+| `references/`、`scripts/`、`assets/` | 可选 | 直接沿用 |
+| 核心要求 | 容易混在长篇说明里 | 明确分级 |
+| 禁止替代方式 | 经常没有写清 | 明确指出 |
+| 当前任务解释 | 依赖AI自行理解 | 生成前要求转化 |
+| 长任务中的要求保持 | 容易逐渐遗忘 | 按当前工作重新注入 |
+| 检查重点 | 是否生成了结果 | 是否按照Skill生成 |
+| 修改方式 | 容易整段重做 | 针对偏离部分返修 |
+| 是否必须安装新运行时 | 不需要 | 核心模式同样不需要 |
 
-## 强执行的核心原语
+## 设计原则
 
-- **阶段锁：** 只允许执行当前获得授权的阶段；
-- **验证器：** 检查格式、数量、引用、哈希、文件和其他确定性事实；
-- **评估器：** 判断语义质量，并绑定具体证据；
-- **门禁：** 综合结果，返回 `PASS`、`CONDITIONAL` 或 `FAIL`；
-- **返修路径：** 规定必须改什么、保留什么、返回哪个阶段；
-- **受保护规则：** 自适应层、任务层和 AI 临时决策不得降低；
-- **完成凭证：** 证明必需阶段和门禁已经按声明的执行等级完成。
+### 扩展原始Skills，而不是替代
 
-ASEP 负责定义“怎样强制”；具体领域 Skill 负责定义“强制什么专业标准”。
-
-导演 Skill 中的高潮、主题、年龄、视觉叙事等只是领域示例，不属于通用规范。
-
-## 文件结构
+ASEP继续采用标准结构：
 
 ```text
-my-enforced-skill/
+my-skill/
 ├── SKILL.md
-├── EXECUTION.yaml
-├── constitution/
-│   └── immutable.yaml
-├── adaptive/
-│   ├── default-policy.yaml
-│   └── policy.schema.json
-├── stages/
-├── gates/
-├── evaluators/
-├── schemas/
+├── references/
+│   ├── adherence.yaml          # 可选的结构化遵循配置
+│   ├── core-requirements.md
+│   ├── quality-criteria.md
+│   └── anti-patterns.md
 ├── scripts/
-└── references/
+│   └── review_adherence.py
+└── assets/
+    └── templates/
 ```
 
-## 最小声明
+基础格式仍然只要求`SKILL.md`。`references/adherence.yaml`只是可选增强，用于让工具检查要求结构；AI主要阅读的内容仍然是Markdown。
+
+### 限制偏离，而不是限制创造
+
+ASEP不规定唯一实现。网站Skill可以要求“滚动必须产生有意义的空间变化”，但AI仍然可以自由选择sticky场景、遮罩、视频序列、SVG、WebGL或其他适合的方法。
+
+### 明确拒绝容易的替代方案
+
+好的要求不仅说明“要什么”，还要说明哪些常见做法不能冒充满足要求。例如“滚动叙事”不能被“只有透明度变化”或“所有章节使用相同动画”替代。
+
+### 检查是为了纠偏，不是为了写证明材料
+
+检查的作用是发现结果何时回到了模型默认套路，然后要求继续修改，不是让AI写一份看起来很完整的自我证明。
+
+## 一个普通的ASEP增强Skill
+
+`SKILL.md`仍然是主入口：
+
+```markdown
+## Required references
+
+开始设计前必须阅读：
+
+- `references/core-requirements.md`
+- `references/anti-patterns.md`
+- `references/quality-criteria.md`
+
+## Core requirements
+
+1. 不得把卡片网格作为首页主要构图。
+2. 滚动必须改变空间、焦点、信息关系或叙事状态。
+3. 图片和视频必须承担内容表达，不能只做装饰。
+
+## How to apply this Skill
+
+正式实现前，把每条核心要求转换为当前页面的具体设计决定；开发每个区块时，持续保留与该区块相关的要求。
+
+## Review and revision
+
+渲染实际页面，按照质量标准检查，并修改所有退回禁止模式的部分。
+```
+
+可选的`references/adherence.yaml`可以把同样的要求写成便于工具检查的形式：
 
 ```yaml
-enforcement:
+profile:
   protocol: ASEP
-  spec_version: "0.2.0-draft"
-  kind: enforced-agent-skill
-  name: evidence-brief
-  version: "0.2.0"
+  spec_version: 0.3.0-draft
+  mode: strict
+  skill: cinematic-web-designer
+
+required_references:
+  - references/core-requirements.md
+  - references/quality-criteria.md
+  - references/anti-patterns.md
+
+requirements:
+  - id: scroll-narrative
+    level: hard
+    statement: 滚动必须改变空间、焦点、信息关系或叙事状态。
+    prohibited_substitutions:
+      - 只有透明度变化
+      - 所有章节使用相同进入动画
+
+application:
+  interpret_for_current_task: true
+  keep_relevant_requirements_active: true
+
+review:
+  required: true
+  criteria: references/quality-criteria.md
+  revise_drifted_parts: true
 ```
 
 ## 快速使用
 
 ```bash
 python -m pip install -e .
-asep validate examples/minimal-enforced-skill
-asep inspect examples/minimal-enforced-skill
+asep validate examples/minimal-adherence-skill
+asep inspect examples/web-design-adherence-skill
 ```
 
-## 执行等级
+改造已有Skill时：
 
-- **L0 普通 Skill：** 宿主只读取 `SKILL.md`，不得声称已执行 ASEP；
-- **L1 声明式强执行：** AI读取规则，但宿主不掌管状态迁移；
-- **L2 脚本强制：** 包内验证和状态脚本可以阻止非法推进；
-- **L3 宿主原生强制：** 宿主管理状态、权限、评估隔离、门禁和最终交付。
+1. 保留原有`SKILL.md`、`references/`、`scripts/`和`assets/`；
+2. 将不可忽略的核心要求从一般建议中分离；
+3. 写清禁止事项和不能冒充合格的替代方式；
+4. 要求AI在生成前把规则转化为当前任务原则；
+5. 增加按Skill检查和定向返修说明；
+6. 有需要时再添加`references/adherence.yaml`。
 
-实际运行在哪一级，就只能声称哪一级，不能把软约束包装成宿主强制。
-
-## 必须诚实说明的限制
-
-内容包可以强制结构、状态、权限、必需检查和完成条件，但如果宿主不提供独立评估上下文，它无法单独证明语义评估一定诚实。因此 ASEP 记录评估可信等级：
-
-```text
-self_assessed < separate_context < separate_model < human_verified
-```
+详见[迁移指南](docs/migration-guide.md)。
 
 ## 示例
 
-- [`minimal-enforced-skill`](examples/minimal-enforced-skill/)：通用三阶段示例；
-- [`film-director-enforcement-profile`](examples/film-director-enforcement-profile/)：导演领域强执行示例。
+- [`minimal-adherence-skill`](examples/minimal-adherence-skill/)：使用标准Skill结构的最小示例；
+- [`web-design-adherence-skill`](examples/web-design-adherence-skill/)：展示如何避免卡片网格和重复淡入等默认模式，同时不规定唯一视觉方案；
+- [`optional-workflow-enforcement`](docs/optional-workflow-enforcement.md)：说明确实需要严格过程控制时，怎样额外加入阶段和门禁。
+
+## ASEP不能保证什么
+
+ASEP不能让能力不足的模型突然拥有专业审美，也不能保证AI自检一定正确。它更实际的目标是：减少AI明明加载了Skill，生成时却又回到默认套路的情况。
 
 ## 当前状态
 
-`0.2.0-draft` 是一次破坏性草案改名。原先短暂使用的 `Contract Skills 0.1.0-draft` 容易让人把重点理解为“契约描述”，新名称明确强调真正核心：**能够阻断执行和完成的强制机制**。详见[迁移说明](docs/migration-from-contract-skills.md)。
+`0.3.0-draft`把项目核心重新聚焦为：**提高AI在生成过程中的Skill遵循程度**。状态机、阻断式完成和凭证降为可选高级机制，不再是所有Skill的默认前提。

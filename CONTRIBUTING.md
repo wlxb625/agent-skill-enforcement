@@ -1,21 +1,23 @@
 # Contributing
 
-Agent Skill Enforcement is an experimental specification. Contributions are welcome as issues, RFCs, schemas, conformance fixtures, domain examples, and host adapters.
+Agent Skill Enforcement is an experimental authoring profile for Agent Skills.
+
+Contributions are welcome as documentation, examples, schemas, validator improvements, tests, and evaluation results.
 
 ## Principles
 
-- preserve compatibility with ordinary Agent Skills;
-- separate universal execution semantics from domain quality rules;
-- do not claim guarantees a content package cannot provide;
-- include negative tests for every new enforcement feature;
-- prefer small composable primitives over domain-specific core fields.
+- extend the standard Agent Skills structure rather than replacing it;
+- keep `SKILL.md` useful to ordinary Skills-compatible agents;
+- separate non-optional requirements from preferences;
+- prefer concrete requirements over abstract quality labels;
+- name default-pattern substitutions that should not count as compliance;
+- treat workflow state and completion controls as optional advanced features;
+- do not claim that package validation guarantees output quality.
 
 ## Pull requests
 
-1. Explain the problem and proposed behavior.
-2. Update specification and schemas together.
-3. Add valid and invalid conformance fixtures.
+1. Explain the adherence failure the change addresses.
+2. Update documentation and schemas together when semantics change.
+3. Add or update valid and invalid fixtures.
 4. Run `python -m unittest discover -s tests -v`.
-5. Note backward compatibility impact.
-
-Substantial changes should begin as an RFC under `rfcs/`.
+5. Note compatibility impact on ordinary Agent Skills.

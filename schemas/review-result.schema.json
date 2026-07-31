@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/wlxb625/agent-skill-enforcement/schemas/review-result.schema.json",
+  "title": "ASEP Review Result",
+  "type": "object",
+  "required": [
+    "skill",
+    "requirements"
+  ],
+  "properties": {
+    "skill": {
+      "type": "string"
+    },
+    "requirements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "satisfied",
+              "drifted",
+              "not-applicable"
+            ]
+          },
+          "reason": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

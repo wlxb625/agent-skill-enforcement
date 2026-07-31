@@ -1,0 +1,41 @@
+profile:
+  protocol: ASEP
+  spec_version: 0.3.0-draft
+  mode: strict
+  skill: concise-project-brief
+
+required_references:
+  - references/core-requirements.md
+  - references/quality-criteria.md
+  - references/anti-patterns.md
+
+requirements:
+  - id: separate-known-and-unknown
+    level: hard
+    statement: Confirmed facts, assumptions, decisions, and open questions must remain visibly separate.
+    source: references/core-requirements.md
+    prohibited_substitutions:
+      - writing one confident narrative that hides uncertainty
+
+  - id: no-invented-details
+    level: hard
+    statement: Missing dates, owners, budgets, and technical decisions must not be invented.
+    source: references/anti-patterns.md
+
+  - id: concise-next-step
+    level: quality
+    statement: The brief should be concise while still making the intended outcome and next unresolved decision clear.
+    source: references/quality-criteria.md
+
+application:
+  interpret_for_current_task: true
+  keep_relevant_requirements_active: true
+  prevent_default_pattern_substitution: true
+
+review:
+  required: true
+  criteria: references/quality-criteria.md
+  scripts:
+    - scripts/review_adherence.py
+  inspect_actual_output: true
+  revise_drifted_parts: true

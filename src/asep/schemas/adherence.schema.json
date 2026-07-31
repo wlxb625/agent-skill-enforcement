@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/wlxb625/agent-skill-enforcement/schemas/adherence.schema.json",
+  "title": "ASEP Adherence Profile",
+  "type": "object",
+  "required": [
+    "profile",
+    "requirements"
+  ],
+  "properties": {
+    "profile": {
+      "type": "object",
+      "required": [
+        "protocol",
+        "spec_version",
+        "mode",
+        "skill"
+      ],
+      "properties": {
+        "protocol": {
+          "const": "ASEP"
+        },
+        "spec_version": {
+          "type": "string"
+        },
+        "mode": {
+          "enum": [
+            "standard",
+            "strict"
+          ]
+        },
+        "skill": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$|^[a-z0-9]$"
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "required_references": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "requirements": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "level",
+          "statement"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          },
+          "level": {
+            "enum": [
+              "hard",
+              "core",
+              "quality",
+              "preference"
+            ]
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 12
+          },
+          "source": {
+            "type": "string"
+          },
+          "applies_to": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "prohibited_substitutions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "review_questions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "application": {
+      "type": "object",
+      "properties": {
+        "interpret_for_current_task": {
+          "type": "boolean"
+        },
+        "keep_relevant_requirements_active": {
+          "type": "boolean"
+        },
+        "prevent_default_pattern_substitution": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "review": {
+      "type": "object",
+      "properties": {
+        "required": {
+          "type": "boolean"
+        },
+        "criteria": {
+          "type": "string"
+        },
+        "scripts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "inspect_actual_output": {
+          "type": "boolean"
+        },
+        "revise_drifted_parts": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "workflow": {
+      "type": "object",
+      "properties": {
+        "optional": {
+          "type": "boolean"
+        },
+        "instructions": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,33 +1,28 @@
 # Roadmap
 
-## 0.2 draft — current
+## 0.3 — Adherence-first core
 
-- enforcement-first project identity and ASEP protocol name;
-- stage locks and lifecycle transitions;
-- validators, evaluators, blocking gates, and repair routes;
-- protected rules and bounded adaptation;
-- receipt-backed completion;
-- reference validator, Schemas, tests, and examples.
+- standard Skill-compatible package structure;
+- requirement-level authoring guidance;
+- optional adherence profile schema;
+- reference validator;
+- minimal and web-design examples.
 
-## 0.3
+## 0.4 — Authoring assistant
 
-- reusable enforcement primitive library;
-- audit event and repair contract Schemas;
-- signed immutable policy bundles;
-- clearer `NOT_APPLICABLE` evidence rules;
-- compatibility profile for the 0.1 draft.
+- `asep init` for creating a standard Skill skeleton;
+- `asep extract` for suggesting core requirements and anti-patterns from an existing `SKILL.md`;
+- human review before generated requirements are written.
 
-## 0.4
+## 0.5 — Adherence evaluation
 
-- host adapter reference interface;
-- evaluator attestation protocol;
-- cross-model conformance suite;
-- package registry metadata.
+- reusable review-result schema;
+- deterministic checks for required references and scripts;
+- visual/web review helpers based on rendered output;
+- writing and coding examples.
 
-## 1.0 criteria
+## Later
 
-- at least two independent host implementations;
-- at least five domain Enforced Skills;
-- stable Schema and migration policy;
-- public security review;
-- reproducible conformance suite.
+- optional host adapters for persistent requirement reminders;
+- optional staged workflow enforcement for high-risk tasks;
+- public A/B evaluation of ordinary Skills versus ASEP-enhanced Skills.

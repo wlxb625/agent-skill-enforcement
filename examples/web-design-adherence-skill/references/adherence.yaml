@@ -1,0 +1,54 @@
+profile:
+  protocol: ASEP
+  spec_version: 0.3.0-draft
+  mode: strict
+  skill: cinematic-web-designer
+
+required_references:
+  - references/design-principles.md
+  - references/anti-patterns.md
+  - references/quality-criteria.md
+
+requirements:
+  - id: avoid-card-grid-default
+    level: hard
+    statement: A repeated card grid must not be the primary page composition.
+    source: references/anti-patterns.md
+    prohibited_substitutions:
+      - changing card radius, blur, or gradient while keeping the same grid structure
+
+  - id: meaningful-scroll-change
+    level: hard
+    statement: Scroll must change space, focus, information relationships, or narrative state rather than only opacity.
+    source: references/design-principles.md#motion-changes-meaning
+    prohibited_substitutions:
+      - opacity-only transitions
+      - identical fade-and-rise animation on every section
+      - decorative parallax without content effect
+    review_questions:
+      - Would the page remain essentially identical if the motion were replaced by fade-ins?
+
+  - id: media-carries-content
+    level: core
+    statement: Major images and video must carry information or progression instead of serving only as decoration.
+    source: references/design-principles.md#media-carries-content
+    prohibited_substitutions:
+      - unrelated full-screen background video
+
+  - id: variable-motion-rhythm
+    level: quality
+    statement: Motion rhythm should vary according to the importance and meaning of each section.
+    source: references/design-principles.md#variable-rhythm
+
+application:
+  interpret_for_current_task: true
+  keep_relevant_requirements_active: true
+  prevent_default_pattern_substitution: true
+
+review:
+  required: true
+  criteria: references/quality-criteria.md
+  scripts:
+    - scripts/check_page_structure.py
+  inspect_actual_output: true
+  revise_drifted_parts: true

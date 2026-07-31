@@ -1,21 +1,25 @@
-# What ASEP is—and is not
+# FAQ
 
-## Is ASEP RAG?
+## Is ASEP a new Skill format?
 
-No. RAG retrieves information. ASEP controls lifecycle progression and completion. An Enforced Skill may use RAG inside a stage.
+No. It is an authoring and validation profile for normal Agent Skills.
 
-## Is ASEP tool calling or MCP?
+## Does ASEP force a fixed workflow?
 
-No. Tools provide actions and MCP exposes tools/resources. ASEP can require or restrict tool use, but its main abstraction is enforceable lifecycle state.
+No. The core profile constrains important requirements while leaving the agent free to choose implementation methods and tools.
 
-## Is ASEP a workflow engine?
+## Is `references/adherence.yaml` required?
 
-No. ASEP is a portable declaration protocol. A host may implement it with a state machine, graph, hooks, scripts, or another engine.
+No. It is optional. A well-written `SKILL.md` and reference set can use the approach without it.
 
-## Does ASEP guarantee quality?
+## Does validation prove the final result is good?
 
-It can enforce deterministic requirements and prevent unverified completion. Semantic quality still depends on evaluator quality and attestation.
+No. Validation checks the package structure and requirement declarations. Model capability and review quality still matter.
 
-## Is policy layering the main feature?
+## Why keep review if the goal is not proof?
 
-No. Layering protects enforcement-critical rules from being weakened. The main feature is the ability to block progression and completion.
+Because agents can drift during long tasks. Review is a feedback mechanism that pulls generation back toward the Skill.
+
+## Can staged workflow enforcement still be used?
+
+Yes, as an optional advanced mechanism for tasks that need strict process control.
