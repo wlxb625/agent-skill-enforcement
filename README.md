@@ -1,143 +1,146 @@
-# Contract Skills
+# Agent Skill Enforcement
 
-**Execution contracts for portable Agent Skills.**
+**A portable enforcement layer for Agent Skills.**
 
-Contract Skills is an experimental extension to the open [Agent Skills](https://github.com/agentskills/agentskills) folder format. It preserves the familiar `SKILL.md` package model while adding machine-readable execution obligations: immutable policies, adaptive policy boundaries, stages, validators, evaluators, quality gates, repair routes, audit records, and completion receipts.
+Agent Skill Enforcement defines the **Agent Skill Enforcement Protocol (ASEP)**: an experimental extension that turns Skill instructions into lifecycle obligations that can block progression and completion.
 
-> Ordinary Skill: “Here is how you should do it.”  
-> Contract Skill: “The task is complete only after these conditions are satisfied.”
+> Ordinary Skills describe how work should be done.  
+> Enforced Skills control whether the work may advance or be declared complete.
+
+ASEP preserves the familiar folder-based Agent Skill model and its `SKILL.md` entry point. It adds a machine-readable `EXECUTION.yaml` that declares stage locks, required artifacts, validators, semantic evaluators, blocking gates, repair routes, protected rules, audit events, and receipt-backed completion.
 
 This repository is an independent community experiment. It is **not** an official revision of the Agent Skills specification.
 
-[中文说明](README.zh-CN.md) · [Specification](SPEC.md) · [Authoring guide](docs/authoring-guide.md) · [Migration guide](docs/migration-guide.md) · [FAQ](docs/faq.md)
+[中文说明](README.zh-CN.md) · [ASEP specification](SPEC.md) · [Authoring guide](docs/authoring-guide.md) · [Migration guide](docs/migration-guide.md) · [FAQ](docs/faq.md)
 
-## Why this exists
+## The problem
 
-Agent Skills package reusable instructions, scripts, references, and templates. In many hosts, however, the model still decides how completely to follow those instructions. A model may skip a stage, reinterpret a threshold, perform self-evaluation, or declare completion without proving that the required process ran.
+A normal Skill can contain excellent methods and professional requirements, while the model may still skip stages, lower thresholds, ignore failed reviews, or announce completion without proving that the required process ran.
 
-Contract Skills adds an optional `EXECUTION.yaml` contract beside `SKILL.md` so a compatible host—or a script-capable agent—can enforce more of the process.
+ASEP makes those requirements executable at the lifecycle level:
+
+```text
+activate
+→ open allowed stage
+→ submit required artifact
+→ validate deterministic facts
+→ evaluate semantic quality
+→ apply blocking gate
+   ├─ PASS: advance
+   ├─ CONDITIONAL: repair
+   └─ FAIL: return or stop
+→ finalize only with a valid completion receipt
+```
 
 ## What is different
 
-| Capability | Ordinary Agent Skill | Contract Skill |
+| Capability | Ordinary Agent Skill | ASEP Enforced Skill |
 |---|---|---|
 | Portable folder package | Yes | Yes |
 | `SKILL.md` instructions | Yes | Yes |
-| Machine-readable stages | Optional prose | Required contract |
-| Rule priority | Usually prompt-based | Explicit policy layers |
-| Immutable professional rules | Not standardized | Declared and protected |
-| Adaptive user policy | Informal memory | Patch-based and bounded |
-| Validators and evaluators | Optional | Separated concepts |
-| Quality gates | Advisory | Can block transition |
-| Repair routing | Informal | Declared transition |
-| Completion | Model says it is done | Receipt-backed completion |
-| Auditability | Host-dependent | Contract-level events |
+| Machine-readable lifecycle | Usually prose | Declared in `EXECUTION.yaml` |
+| Stage progression | Model-controlled | Can be stage-locked |
+| Required artifacts | Advisory | Schema-validated |
+| Quality checks | Optional advice | Gates can block transition |
+| Failed review | Model may continue | Declared repair/return route |
+| Protected thresholds | Not standardized | Lower layers cannot weaken them |
+| Completion | Model says “done” | Requires `ASEP_COMPLETE` receipt |
+| Auditability | Host-dependent | Lifecycle events and evidence |
 
-## Design principle
+## Enforcement primitives
 
-Contract Skills does **not** define what “good” means in every profession.
-
-It defines how a Skill author can turn professional standards into executable declarations:
-
+- **Stage lock** — only the currently authorized stage may run.
 - **Validator** — checks deterministic facts such as schema, counts, references, hashes, or required files.
 - **Evaluator** — judges semantic quality and binds findings to evidence.
-- **Gate** — combines validator and evaluator results to decide `PASS`, `CONDITIONAL`, or `FAIL`.
-- **Repair contract** — states what must change, what should be preserved, and where execution returns.
+- **Gate** — combines results and returns `PASS`, `CONDITIONAL`, or `FAIL`.
+- **Repair route** — declares what must change, what should be preserved, and where execution returns.
+- **Protected rule** — cannot be weakened by adaptive policy, task policy, or model-local decisions.
+- **Completion receipt** — proves that required stages and gates were satisfied at the claimed enforcement level.
 
-The core specification defines **how to gate**. Domain packages define **what to gate**.
+ASEP defines **how enforcement is expressed**. Each domain Skill defines **what professional standards are enforced**.
 
 ## Package layout
 
 ```text
-my-contract-skill/
-├── SKILL.md                         # Existing Agent Skills entry point
-├── EXECUTION.yaml                   # Contract Skills extension
+my-enforced-skill/
+├── SKILL.md
+├── EXECUTION.yaml
 ├── constitution/
-│   └── immutable.yaml               # Protected rules and policy priority
+│   └── immutable.yaml
 ├── adaptive/
-│   ├── default-policy.yaml          # User/project preferences
+│   ├── default-policy.yaml
 │   └── policy.schema.json
-├── stages/                          # Stage-scoped instructions
-├── gates/                           # Domain and system gates
-├── evaluators/                      # Semantic rubrics
-├── schemas/                         # Artifact and evaluation schemas
-├── scripts/                         # Optional deterministic checks
-└── references/                      # Existing Skill resources
+├── stages/
+├── gates/
+├── evaluators/
+├── schemas/
+├── scripts/
+└── references/
+```
+
+## Minimal declaration
+
+```yaml
+enforcement:
+  protocol: ASEP
+  spec_version: "0.2.0-draft"
+  kind: enforced-agent-skill
+  name: evidence-brief
+  version: "0.2.0"
+
+state:
+  controlled_by: bundled-script
+  start_stage: draft
+
+transitions:
+  draft:
+    PASS: review
+    FAIL: FAILED
+  review:
+    PASS: final
+    CONDITIONAL: draft
+    FAIL: FAILED
+  final:
+    PASS: COMPLETE
+
+completion:
+  terminal_stage: COMPLETE
+  receipt_schema: schemas/completion-receipt.schema.json
 ```
 
 ## Quick start
 
-### 1. Install the reference validator
-
 ```bash
 python -m pip install -e .
+asep validate examples/minimal-enforced-skill
+asep inspect examples/minimal-enforced-skill
 ```
 
-### 2. Validate the minimal example
+## Enforcement levels
 
-```bash
-contract-skill validate examples/minimal-contract-skill
-```
+- **L0 — Ordinary Skill:** the host reads only `SKILL.md`; no ASEP claim is allowed.
+- **L1 — Declared Enforcement:** the model reads ASEP declarations, but the host does not own transitions.
+- **L2 — Script-Enforced:** bundled validators/state scripts can block invalid transitions and completion.
+- **L3 — Host-Enforced:** the host owns state, permissions, evaluator isolation, gates, and finalization.
 
-### 3. Inspect the contract
-
-```bash
-contract-skill inspect examples/minimal-contract-skill
-```
-
-### 4. Upgrade an existing Skill
-
-Keep the original `SKILL.md`, then add:
-
-1. `EXECUTION.yaml`;
-2. an immutable policy file;
-3. stage-specific outputs and schemas;
-4. validators, evaluators, and gates;
-5. failure/repair transitions;
-6. a completion receipt requirement.
-
-See [Migration guide](docs/migration-guide.md).
-
-## Execution levels
-
-Contract Skills can degrade gracefully depending on host support:
-
-- **L0 — Ordinary Skill:** host reads `SKILL.md` only.
-- **L1 — Soft Contract:** the model reads the contract but the host does not enforce lifecycle hooks.
-- **L2 — Script-Validated Contract:** the host can run bundled validation/state scripts.
-- **L3 — Host-Enforced Contract:** the host owns state transitions, policy protection, evaluator isolation, and finalization.
-
-A package must never claim L3 enforcement when it only ran in L1 or L2.
-
-## Core policy hierarchy
-
-```text
-Immutable contract policy
-    > Adaptive user/project policy
-        > Current task policy
-            > Model-local decisions
-```
-
-The adaptive layer may personalize the process but must not reduce protected thresholds, skip required stages, disable gates, or expand permissions prohibited by the immutable layer.
+A package must never claim stronger enforcement than the runtime actually provided.
 
 ## Important limitation
 
-A content package can enforce structure, state, counts, references, permissions, required checks, and completion conditions. It cannot, by itself, prove that a semantic evaluator was honest or truly isolated from the generator. Evaluation attestation therefore has explicit trust levels:
+A package can strongly enforce deterministic structure, state, permissions, required checks, and completion conditions. It cannot, by itself, prove that a semantic evaluator was honest or isolated from the generator. ASEP therefore records evaluation attestation:
 
 ```text
 self_assessed < separate_context < separate_model < human_verified
 ```
 
-See [Semantic evaluation limitations](docs/semantic-evaluation-limitations.md).
-
 ## Examples
 
-- [`minimal-contract-skill`](examples/minimal-contract-skill/) — a three-stage generic example.
-- [`film-director-contract-profile`](examples/film-director-contract-profile/) — shows domain gates such as climax force, thematic necessity, and character age fit. These are examples, not part of the universal standard.
+- [`minimal-enforced-skill`](examples/minimal-enforced-skill/) — a generic three-stage example.
+- [`film-director-enforcement-profile`](examples/film-director-enforcement-profile/) — domain-specific gates for screenplay creation. Those gates are examples, not universal ASEP requirements.
 
 ## Status
 
-`0.1.0-draft` is an experimental specification intended for discussion, prototyping, and conformance testing. Breaking changes are expected before `1.0`.
+`0.2.0-draft` is a breaking draft rename from the briefly published `Contract Skills 0.1.0-draft`. The new name makes the core purpose explicit: **enforcement, not merely contract description**. See [migration notes](docs/migration-from-contract-skills.md).
 
 ## License
 

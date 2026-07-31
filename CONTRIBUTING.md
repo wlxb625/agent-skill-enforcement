@@ -1,6 +1,6 @@
 # Contributing
 
-Contract Skills is an experimental specification. Contributions are welcome as issues, RFCs, schemas, conformance fixtures, domain examples, and host adapters.
+Agent Skill Enforcement is an experimental specification. Contributions are welcome as issues, RFCs, schemas, conformance fixtures, domain examples, and host adapters.
 
 ## Principles
 

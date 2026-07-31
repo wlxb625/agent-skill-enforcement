@@ -2,7 +2,7 @@
 
 ## 1. Start with an existing Skill
 
-Keep `SKILL.md` concise and useful for ordinary hosts. Contract Skills should extend, not replace, the basic Skill experience.
+Keep `SKILL.md` concise and useful for ordinary hosts. Agent Skill Enforcement should extend, not replace, the basic Skill experience.
 
 ## 2. Extract invariants
 

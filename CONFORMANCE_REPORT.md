@@ -1,10 +1,10 @@
-# Conformance report
+# ASEP conformance report
 
-Version: `0.1.0-draft`
+Version: `0.2.0-draft`
 
-- Unit tests: **5 passed**
-- Minimal generic example: **VALID**
-- Film-director domain profile: **VALID**
+- Unit tests: run through the bundled Python suite;
+- Minimal generic example: expected **VALID**;
+- Film-director enforcement profile: expected **VALID**;
 - Invalid-package tests cover missing required files, unknown transition targets, and adaptive-policy overlap with protected paths.
 
-This report verifies the reference validator and package structure. It does not claim semantic-quality guarantees.
+This report verifies the reference validator and package structure. It does not claim semantic-quality guarantees or L3 host enforcement.

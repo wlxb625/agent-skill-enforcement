@@ -1,125 +1,58 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contract-skills.dev/schemas/execution.schema.json",
-  "title": "Contract Skill Execution Contract",
+  "$id": "https://github.com/wlxb625/agent-skill-enforcement/schemas/execution.schema.json",
+  "title": "ASEP Enforcement Declaration",
   "type": "object",
-  "required": [
-    "contract_skill",
-    "compatibility",
-    "policy_layers",
-    "state",
-    "stages",
-    "transitions",
-    "completion"
-  ],
+  "required": ["enforcement", "compatibility", "policy_layers", "state", "stages", "transitions", "completion"],
   "properties": {
-    "contract_skill": {
+    "enforcement": {
       "type": "object",
-      "required": [
-        "spec_version",
-        "kind",
-        "name",
-        "version"
-      ],
+      "required": ["protocol", "spec_version", "kind", "name", "version"],
       "properties": {
-        "spec_version": {
-          "type": "string"
-        },
-        "kind": {
-          "const": "contract-skill"
-        },
-        "name": {
-          "type": "string",
-          "pattern": "^[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$|^[a-z0-9]$"
-        },
-        "version": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        }
+        "protocol": {"const": "ASEP"},
+        "spec_version": {"type": "string"},
+        "kind": {"const": "enforced-agent-skill"},
+        "name": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$|^[a-z0-9]$"},
+        "version": {"type": "string"},
+        "description": {"type": "string"}
       },
       "additionalProperties": true
     },
     "compatibility": {
       "type": "object",
-      "required": [
-        "ordinary_skill",
-        "fallback_mode"
-      ],
+      "required": ["ordinary_skill", "fallback_mode"],
       "properties": {
-        "ordinary_skill": {
-          "type": "boolean"
-        },
-        "fallback_mode": {
-          "enum": [
-            "ordinary-skill",
-            "soft-contract",
-            "block"
-          ]
-        },
-        "minimum_execution_level": {
-          "enum": [
-            "L0",
-            "L1",
-            "L2",
-            "L3"
-          ]
-        }
+        "ordinary_skill": {"type": "boolean"},
+        "fallback_mode": {"enum": ["ordinary-skill", "soft-enforcement", "block"]},
+        "minimum_execution_level": {"enum": ["L0", "L1", "L2", "L3"]}
       },
       "additionalProperties": true
     },
     "policy_layers": {
       "type": "object",
-      "required": [
-        "immutable"
-      ],
+      "required": ["immutable"],
       "properties": {
-        "immutable": {
-          "type": "string"
-        },
+        "immutable": {"type": "string"},
         "adaptive": {
           "type": "object",
           "properties": {
-            "default": {
-              "type": "string"
-            },
-            "schema": {
-              "type": "string"
-            },
-            "patch_schema": {
-              "type": "string"
-            }
+            "default": {"type": "string"},
+            "schema": {"type": "string"},
+            "patch_schema": {"type": "string"}
           },
           "additionalProperties": true
         },
-        "task": {
-          "type": "object",
-          "additionalProperties": true
-        }
+        "task": {"type": "object", "additionalProperties": true}
       },
       "additionalProperties": false
     },
     "state": {
       "type": "object",
-      "required": [
-        "controlled_by",
-        "start_stage"
-      ],
+      "required": ["controlled_by", "start_stage"],
       "properties": {
-        "controlled_by": {
-          "enum": [
-            "host",
-            "bundled-script",
-            "model"
-          ]
-        },
-        "start_stage": {
-          "type": "string"
-        },
-        "storage": {
-          "type": "string"
-        }
+        "controlled_by": {"enum": ["host", "bundled-script", "model"]},
+        "start_stage": {"type": "string"},
+        "storage": {"type": "string"}
       },
       "additionalProperties": true
     },
@@ -128,90 +61,33 @@
       "minItems": 1,
       "items": {
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "properties": {
-          "id": {
-            "type": "string"
-          },
-          "instruction": {
-            "type": "string"
-          },
-          "input_schema": {
-            "type": "string"
-          },
-          "output_schema": {
-            "type": "string"
-          },
-          "gates": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "allowed_tools": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "max_repair_rounds": {
-            "type": "integer",
-            "minimum": 0
-          }
+          "id": {"type": "string"},
+          "instruction": {"type": "string"},
+          "input_schema": {"type": "string"},
+          "output_schema": {"type": "string"},
+          "gates": {"type": "array", "items": {"type": "string"}},
+          "allowed_tools": {"type": "array", "items": {"type": "string"}},
+          "max_repair_rounds": {"type": "integer", "minimum": 0}
         },
         "additionalProperties": true
       }
     },
-    "gates": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    },
+    "gates": {"type": "array", "items": {"type": "string"}},
     "transitions": {
       "type": "object",
-      "additionalProperties": {
-        "type": "object",
-        "additionalProperties": {
-          "type": "string"
-        }
-      }
+      "additionalProperties": {"type": "object", "additionalProperties": {"type": "string"}}
     },
     "completion": {
       "type": "object",
-      "required": [
-        "terminal_stage",
-        "receipt_schema"
-      ],
+      "required": ["terminal_stage", "receipt_schema"],
       "properties": {
-        "terminal_stage": {
-          "type": "string"
-        },
-        "receipt_schema": {
-          "type": "string"
-        },
-        "requires_stages": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "requires_gates": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "minimum_attestation": {
-          "enum": [
-            "self_assessed",
-            "separate_context",
-            "separate_model",
-            "human_verified"
-          ]
-        }
+        "terminal_stage": {"type": "string"},
+        "receipt_schema": {"type": "string"},
+        "requires_stages": {"type": "array", "items": {"type": "string"}},
+        "requires_gates": {"type": "array", "items": {"type": "string"}},
+        "minimum_attestation": {"enum": ["self_assessed", "separate_context", "separate_model", "human_verified"]}
       },
       "additionalProperties": true
     }

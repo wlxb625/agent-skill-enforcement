@@ -1,13 +1,13 @@
 {
-  "package": "/mnt/data/contract-skills-v0.1.0-draft/examples/film-director-contract-profile",
+  "package": "/mnt/data/agent-skill-enforcement-v0.2.0-draft/examples/film-director-enforcement-profile",
   "valid": true,
   "summary": {
-    "contract_name": "film-director-contract-profile",
-    "contract_version": "0.1.0",
-    "spec_version": "0.1.0-draft",
+    "enforcement_name": "film-director-enforcement-profile",
+    "package_version": "0.2.0",
+    "spec_version": "0.2.0-draft",
     "stages": 3,
     "gates": 5,
-    "fallback_mode": "soft-contract",
+    "fallback_mode": "soft-enforcement",
     "state_owner": "bundled-script"
   },
   "findings": []

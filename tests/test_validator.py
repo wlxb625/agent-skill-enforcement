@@ -4,19 +4,17 @@ import tempfile
 import unittest
 import yaml
 
-from contract_skills.validator import validate_package
-
+from asep.validator import validate_package
 
 ROOT = Path(__file__).resolve().parents[1]
 
-
 class ValidatorTests(unittest.TestCase):
     def test_minimal_example_is_valid(self):
-        report = validate_package(ROOT / "examples/minimal-contract-skill")
+        report = validate_package(ROOT / "examples/minimal-enforced-skill")
         self.assertTrue(report.valid, report.as_dict())
 
     def test_director_profile_is_valid(self):
-        report = validate_package(ROOT / "examples/film-director-contract-profile")
+        report = validate_package(ROOT / "examples/film-director-enforcement-profile")
         self.assertTrue(report.valid, report.as_dict())
 
     def test_missing_execution_is_invalid(self):
@@ -32,7 +30,7 @@ class ValidatorTests(unittest.TestCase):
     def test_unknown_transition_target_is_invalid(self):
         with tempfile.TemporaryDirectory() as tmp:
             p = Path(tmp) / "skill"
-            shutil.copytree(ROOT / "examples/minimal-contract-skill", p)
+            shutil.copytree(ROOT / "examples/minimal-enforced-skill", p)
             execution_path = p / "EXECUTION.yaml"
             execution = yaml.safe_load(execution_path.read_text(encoding="utf-8"))
             execution["transitions"]["draft"]["PASS"] = "ghost-stage"
@@ -44,7 +42,7 @@ class ValidatorTests(unittest.TestCase):
     def test_adaptive_overlap_is_invalid(self):
         with tempfile.TemporaryDirectory() as tmp:
             p = Path(tmp) / "skill"
-            shutil.copytree(ROOT / "examples/minimal-contract-skill", p)
+            shutil.copytree(ROOT / "examples/minimal-enforced-skill", p)
             constitution_path = p / "constitution/immutable.yaml"
             constitution = yaml.safe_load(constitution_path.read_text(encoding="utf-8"))
             constitution["adaptive_permissions"]["allowed_paths"].append("gates.thresholds")
@@ -52,7 +50,6 @@ class ValidatorTests(unittest.TestCase):
             report = validate_package(p)
             self.assertFalse(report.valid)
             self.assertIn("ADAPTIVE_PROTECTED_OVERLAP", {f.code for f in report.findings})
-
 
 if __name__ == "__main__":
     unittest.main()

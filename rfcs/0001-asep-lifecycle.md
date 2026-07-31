@@ -1,4 +1,4 @@
-# RFC 0001: Contract Skill lifecycle
+# RFC 0001: ASEP enforcement lifecycle
 
 Status: Draft
 

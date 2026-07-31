@@ -4,7 +4,7 @@
 
 A portable folder containing `SKILL.md`, instructions, scripts, references, templates, or assets.
 
-## Contract Skill
+## Enforced Skill
 
 A Skill that additionally declares execution obligations in `EXECUTION.yaml`.
 

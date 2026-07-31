@@ -1,59 +1,24 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contract-skills.dev/schemas/gate.schema.json",
-  "title": "Contract Skill Gate",
+  "$id": "https://github.com/wlxb625/agent-skill-enforcement/schemas/gate.schema.json",
+  "title": "Enforced Skill Gate",
   "type": "object",
-  "required": [
-    "id",
-    "stage",
-    "required",
-    "logic",
-    "decision",
-    "transitions"
-  ],
+  "required": ["id", "stage", "required", "logic", "decision", "transitions"],
   "properties": {
-    "id": {
-      "type": "string"
-    },
-    "description": {
-      "type": "string"
-    },
-    "stage": {
-      "type": "string"
-    },
-    "required": {
-      "type": "boolean"
-    },
-    "applicability": {
-      "type": "object",
-      "additionalProperties": true
-    },
+    "id": {"type": "string"},
+    "description": {"type": "string"},
+    "stage": {"type": "string"},
+    "required": {"type": "boolean"},
+    "applicability": {"type": "object", "additionalProperties": true},
     "validators": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "id",
-          "type"
-        ],
+        "required": ["id", "type"],
         "properties": {
-          "id": {
-            "type": "string"
-          },
-          "type": {
-            "enum": [
-              "schema",
-              "count",
-              "reference",
-              "hash",
-              "file",
-              "command",
-              "custom"
-            ]
-          },
-          "config": {
-            "type": "object"
-          }
+          "id": {"type": "string"},
+          "type": {"enum": ["schema", "count", "reference", "hash", "file", "command", "custom"]},
+          "config": {"type": "object"}
         },
         "additionalProperties": true
       }
@@ -62,92 +27,40 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "id",
-          "type"
-        ],
+        "required": ["id", "type"],
         "properties": {
-          "id": {
-            "type": "string"
-          },
-          "type": {
-            "enum": [
-              "semantic",
-              "deterministic",
-              "tool",
-              "human"
-            ]
-          },
-          "rubric": {
-            "type": "string"
-          },
-          "minimum_attestation": {
-            "enum": [
-              "self_assessed",
-              "separate_context",
-              "separate_model",
-              "human_verified"
-            ]
-          },
-          "required": {
-            "type": "boolean"
-          }
+          "id": {"type": "string"},
+          "type": {"enum": ["semantic", "deterministic", "tool", "human"]},
+          "rubric": {"type": "string"},
+          "minimum_attestation": {"enum": ["self_assessed", "separate_context", "separate_model", "human_verified"]},
+          "required": {"type": "boolean"}
         },
         "additionalProperties": true
       }
     },
-    "logic": {
-      "enum": [
-        "ALL",
-        "ANY",
-        "WEIGHTED",
-        "CUSTOM"
-      ]
-    },
+    "logic": {"enum": ["ALL", "ANY", "WEIGHTED", "CUSTOM"]},
     "decision": {
       "type": "object",
-      "required": [
-        "hard_fail_override"
-      ],
+      "required": ["hard_fail_override"],
       "properties": {
-        "hard_fail_override": {
-          "type": "boolean"
-        },
-        "pass_when": {
-          "type": "object"
-        },
-        "conditional_when": {
-          "type": "object"
-        }
+        "hard_fail_override": {"type": "boolean"},
+        "pass_when": {"type": "object"},
+        "conditional_when": {"type": "object"}
       },
       "additionalProperties": true
     },
     "transitions": {
       "type": "object",
-      "required": [
-        "PASS",
-        "FAIL"
-      ],
+      "required": ["PASS", "FAIL"],
       "properties": {
-        "PASS": {
-          "type": "string"
-        },
-        "CONDITIONAL": {
-          "type": "string"
-        },
-        "FAIL": {
-          "type": "string"
-        },
-        "NOT_APPLICABLE": {
-          "type": "string"
-        }
+        "PASS": {"type": "string"},
+        "CONDITIONAL": {"type": "string"},
+        "FAIL": {"type": "string"},
+        "NOT_APPLICABLE": {"type": "string"}
       },
       "additionalProperties": false
     },
-    "repair": {
-      "type": "object",
-      "additionalProperties": true
-    }
+    "repair": {"type": "object", "additionalProperties": true}
   },
   "additionalProperties": true
 }

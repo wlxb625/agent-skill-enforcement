@@ -1,29 +1,21 @@
-# What Contract Skills is—and is not
+# What ASEP is—and is not
 
-## Is it RAG?
+## Is ASEP RAG?
 
-No. RAG retrieves information. A Contract Skill defines obligations for how a task progresses and when it may be completed. A Contract Skill may use RAG inside a stage.
+No. RAG retrieves information. ASEP controls lifecycle progression and completion. An Enforced Skill may use RAG inside a stage.
 
-## Is it tool calling or MCP?
+## Is ASEP tool calling or MCP?
 
-No. Tools provide actions and MCP provides a protocol for tools and resources. A Contract Skill can declare when tools are allowed or required, but its main abstraction is the execution contract.
+No. Tools provide actions and MCP exposes tools/resources. ASEP can require or restrict tool use, but its main abstraction is enforceable lifecycle state.
 
-## Is it a workflow engine?
+## Is ASEP a workflow engine?
 
-Not by itself. The specification is a portable declaration format. A host may implement it using a state machine, graph workflow, hooks, scripts, or another engine. Contract Skills should not reinvent scheduling, queues, retries, or distributed orchestration.
+No. ASEP is a portable declaration protocol. A host may implement it with a state machine, graph, hooks, scripts, or another engine.
 
-## Is it just a longer prompt?
+## Does ASEP guarantee quality?
 
-No. In L1 fallback it may behave like a structured prompt, but L2 and L3 modes move state, validation, policy protection, and completion outside model discretion.
+It can enforce deterministic requirements and prevent unverified completion. Semantic quality still depends on evaluator quality and attestation.
 
-## Does it guarantee high-quality output?
+## Is policy layering the main feature?
 
-No. It can enforce process and evidence obligations. Semantic quality still depends on evaluators and their attestation.
-
-## Are film gates part of the standard?
-
-No. Climax force, thematic necessity, character age fit, and visual narrative are domain examples. Other Skills define their own gates.
-
-## Can an ordinary Agent Skills host still use the package?
-
-Yes, when `compatibility.ordinary_skill` is true. The host may ignore the extension or use `soft-contract` fallback, but it must not claim stronger enforcement than actually occurred.
+No. Layering protects enforcement-critical rules from being weakened. The main feature is the ability to block progression and completion.

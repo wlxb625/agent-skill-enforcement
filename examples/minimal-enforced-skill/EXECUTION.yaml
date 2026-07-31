@@ -1,13 +1,14 @@
-contract_skill:
-  spec_version: "0.1.0-draft"
-  kind: contract-skill
+enforcement:
+  protocol: ASEP
+  spec_version: "0.2.0-draft"
+  kind: enforced-agent-skill
   name: evidence-brief
-  version: "0.1.0"
-  description: Minimal three-stage Contract Skill example.
+  version: "0.2.0"
+  description: Minimal three-stage Enforced Skill example.
 
 compatibility:
   ordinary_skill: true
-  fallback_mode: soft-contract
+  fallback_mode: soft-enforcement
   minimum_execution_level: L1
 
 policy_layers:
@@ -20,7 +21,7 @@ policy_layers:
 state:
   controlled_by: bundled-script
   start_stage: draft
-  storage: .contract/state.json
+  storage: .asep/state.json
 
 stages:
   - id: draft

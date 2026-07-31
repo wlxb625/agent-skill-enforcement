@@ -3,9 +3,9 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "contract-skills-validator"
-version = "0.1.0"
-description = "Reference validator for the Contract Skills draft specification"
+name = "asep-validator"
+version = "0.2.0"
+description = "Reference validator for the Agent Skill Enforcement Protocol (ASEP)"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
@@ -15,7 +15,7 @@ dependencies = [
 ]
 
 [project.scripts]
-contract-skill = "contract_skills.cli:main"
+asep = "asep.cli:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
@@ -24,4 +24,4 @@ package-dir = {"" = "src"}
 where = ["src"]
 
 [tool.setuptools.package-data]
-contract_skills = ["schemas/*.json"]
+asep = ["schemas/*.json"]

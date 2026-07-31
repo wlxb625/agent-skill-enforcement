@@ -1,12 +1,13 @@
-contract_skill:
-  spec_version: "0.1.0-draft"
-  kind: contract-skill
-  name: film-director-contract-profile
-  version: "0.1.0"
+enforcement:
+  protocol: ASEP
+  spec_version: "0.2.0-draft"
+  kind: enforced-agent-skill
+  name: film-director-enforcement-profile
+  version: "0.2.0"
   description: Domain-profile example for film narrative development.
 compatibility:
   ordinary_skill: true
-  fallback_mode: soft-contract
+  fallback_mode: soft-enforcement
   minimum_execution_level: L1
 policy_layers:
   immutable: constitution/immutable.yaml

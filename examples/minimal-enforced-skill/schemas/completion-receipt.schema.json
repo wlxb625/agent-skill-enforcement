@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contract-skills.dev/schemas/completion-receipt.schema.json",
-  "title": "Contract Skill Completion Receipt",
+  "$id": "https://github.com/wlxb625/agent-skill-enforcement/schemas/completion-receipt.schema.json",
+  "title": "Enforced Skill Completion Receipt",
   "type": "object",
   "required": [
-    "contract",
+    "enforcement",
     "task_id",
     "execution_level",
     "status",
@@ -15,26 +15,6 @@
     "timestamp"
   ],
   "properties": {
-    "contract": {
-      "type": "object",
-      "required": [
-        "name",
-        "version",
-        "spec_version"
-      ],
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "version": {
-          "type": "string"
-        },
-        "spec_version": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": true
-    },
     "task_id": {
       "type": "string"
     },
@@ -48,9 +28,9 @@
     },
     "status": {
       "enum": [
-        "CONTRACT_COMPLETE",
-        "CONTRACT_FAILED",
-        "CONTRACT_BLOCKED"
+        "ASEP_COMPLETE",
+        "ASEP_FAILED",
+        "ASEP_BLOCKED"
       ]
     },
     "completed_stages": {
@@ -82,6 +62,30 @@
     },
     "timestamp": {
       "type": "string"
+    },
+    "enforcement": {
+      "type": "object",
+      "required": [
+        "protocol",
+        "name",
+        "version",
+        "spec_version"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "spec_version": {
+          "type": "string"
+        },
+        "protocol": {
+          "const": "ASEP"
+        }
+      },
+      "additionalProperties": true
     }
   },
   "additionalProperties": true

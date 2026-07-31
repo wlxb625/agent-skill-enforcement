@@ -1,21 +1,22 @@
-# 上传 GitHub 指南
+# GitHub 发布与改名指南
 
-## 建议仓库名称
+## 正式名称
 
-```text
-contract-skills
-```
+- 项目：`Agent Skill Enforcement`
+- 规范：`Agent Skill Enforcement Protocol (ASEP)`
+- 仓库：`agent-skill-enforcement`
+- 类型：`Enforced Skill / 强执行型 Skill`
 
 ## GitHub Description
 
 ```text
-An experimental execution-contract extension for Agent Skills: immutable policies, adaptive layers, stages, gates, repairs, and completion receipts.
+An enforcement layer for Agent Skills: stage locks, validators, blocking gates, repair routes, protected rules, and receipt-backed completion.
 ```
 
-中文简介可写：
+中文简介：
 
 ```text
-面向 Agent Skills 的实验性强执行扩展：通过不可变策略、自适应层、阶段、门禁、返修和完成凭证，把方法说明升级为执行契约。
+面向 Agent Skills 的强执行扩展：通过阶段锁、验证器、阻断式门禁、返修路径、受保护规则和完成凭证控制任务能否继续与交付。
 ```
 
 ## Topics
@@ -24,42 +25,30 @@ An experimental execution-contract extension for Agent Skills: immutable policie
 agent-skills
 ai-agents
 llm-agents
+enforcement
 workflow
 policy-as-code
 guardrails
 agent-governance
-execution-contracts
 ```
 
-## 新建并上传
+## 将现有仓库改名
+
+GitHub 仓库页面：`Settings` → `General` → `Repository name`，将 `contract-skills` 改为：
+
+```text
+agent-skill-enforcement
+```
+
+GitHub 会为旧地址建立重定向。之后本地执行：
 
 ```bash
-git init
-git add .
-git commit -m "Initial Contract Skills 0.1 draft"
-git branch -M main
-git remote add origin https://github.com/<YOUR_NAME>/contract-skills.git
-git push -u origin main
+git remote set-url origin https://github.com/<YOUR_NAME>/agent-skill-enforcement.git
 ```
 
-## 首个 Release
-
-建议标签：
+## Release
 
 ```text
-v0.1.0-draft
+Tag: v0.2.0-draft
+Title: Agent Skill Enforcement Protocol (ASEP) 0.2 Draft
 ```
-
-Release 标题：
-
-```text
-Contract Skills Specification 0.1 Draft
-```
-
-Release 说明重点：
-
-- experimental and not official;
-- preserves ordinary Agent Skills compatibility;
-- adds execution contract primitives;
-- includes reference validator and examples;
-- semantic evaluation still depends on host attestation.

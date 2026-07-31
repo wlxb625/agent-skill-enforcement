@@ -9,9 +9,7 @@ import re
 import yaml
 from jsonschema import Draft202012Validator
 
-
 TERMINALS = {"COMPLETE", "FAILED", "BLOCKED"}
-
 
 @dataclass
 class Finding:
@@ -25,7 +23,6 @@ class Finding:
         if self.path:
             data["path"] = self.path
         return data
-
 
 @dataclass
 class ValidationReport:
@@ -41,23 +38,15 @@ class ValidationReport:
         self.findings.append(Finding(level, code, message, path))
 
     def as_dict(self) -> dict[str, Any]:
-        return {
-            "package": self.package,
-            "valid": self.valid,
-            "summary": self.summary,
-            "findings": [f.as_dict() for f in self.findings],
-        }
-
+        return {"package": self.package, "valid": self.valid, "summary": self.summary, "findings": [f.as_dict() for f in self.findings]}
 
 def _load_yaml(path: Path) -> Any:
     with path.open("r", encoding="utf-8") as fh:
         return yaml.safe_load(fh)
 
-
 def _load_json(path: Path) -> Any:
     with path.open("r", encoding="utf-8") as fh:
         return json.load(fh)
-
 
 def _validate_schema(instance: Any, schema_path: Path, report: ValidationReport, label: str) -> None:
     schema = _load_json(schema_path)
@@ -65,7 +54,6 @@ def _validate_schema(instance: Any, schema_path: Path, report: ValidationReport,
     for error in sorted(validator.iter_errors(instance), key=lambda e: list(e.path)):
         location = ".".join(str(x) for x in error.path)
         report.add("error", "SCHEMA_VIOLATION", f"{label}: {error.message}", location or label)
-
 
 def _frontmatter_name(skill_path: Path) -> str | None:
     text = skill_path.read_text(encoding="utf-8")
@@ -75,7 +63,6 @@ def _frontmatter_name(skill_path: Path) -> str | None:
     data = yaml.safe_load(match.group(1)) or {}
     return data.get("name")
 
-
 def _path_exists(root: Path, rel: str, report: ValidationReport, code: str = "MISSING_REFERENCE") -> bool:
     target = root / rel
     if not target.exists():
@@ -83,24 +70,20 @@ def _path_exists(root: Path, rel: str, report: ValidationReport, code: str = "MI
         return False
     return True
 
-
 def _prefix_overlap(a: str, b: str) -> bool:
     def norm(x: str) -> str:
         return x.strip().strip("/").replace("[", ".").replace("]", "")
     x, y = norm(a), norm(b)
     return x == y or x.startswith(y + ".") or y.startswith(x + ".")
 
-
 def validate_package(package: str | Path) -> ValidationReport:
     root = Path(package).resolve()
     report = ValidationReport(str(root))
-
     if not root.is_dir():
         report.add("error", "PACKAGE_NOT_DIRECTORY", "Package path is not a directory")
         return report
 
-    required = ["SKILL.md", "EXECUTION.yaml", "constitution/immutable.yaml"]
-    for rel in required:
+    for rel in ["SKILL.md", "EXECUTION.yaml", "constitution/immutable.yaml"]:
         if not (root / rel).exists():
             report.add("error", "MISSING_REQUIRED_FILE", f"Missing required file: {rel}", rel)
     if not report.valid:
@@ -108,17 +91,16 @@ def validate_package(package: str | Path) -> ValidationReport:
 
     execution = _load_yaml(root / "EXECUTION.yaml") or {}
     constitution = _load_yaml(root / "constitution/immutable.yaml") or {}
-
     schema_root = Path(__file__).resolve().parent / "schemas"
     _validate_schema(execution, schema_root / "execution.schema.json", report, "EXECUTION.yaml")
     _validate_schema(constitution, schema_root / "constitution.schema.json", report, "constitution/immutable.yaml")
 
     skill_name = _frontmatter_name(root / "SKILL.md")
-    contract_name = execution.get("contract_skill", {}).get("name")
+    enforcement_name = execution.get("enforcement", {}).get("name")
     if not skill_name:
         report.add("error", "INVALID_SKILL_FRONTMATTER", "SKILL.md must have YAML frontmatter with name")
-    elif contract_name and skill_name != contract_name:
-        report.add("warning", "NAME_MISMATCH", f"SKILL.md name '{skill_name}' differs from contract name '{contract_name}'")
+    elif enforcement_name and skill_name != enforcement_name:
+        report.add("warning", "NAME_MISMATCH", f"SKILL.md name '{skill_name}' differs from enforcement name '{enforcement_name}'")
 
     policy_layers = execution.get("policy_layers", {})
     immutable_rel = policy_layers.get("immutable")
@@ -192,9 +174,9 @@ def validate_package(package: str | Path) -> ValidationReport:
             gate_ids.add(gid)
         if gate.get("stage") not in stage_map:
             report.add("error", "GATE_UNKNOWN_STAGE", f"Gate {gid} references undeclared stage {gate.get('stage')}", rel)
-        for transition_target in (gate.get("transitions") or {}).values():
-            if transition_target not in stage_map and transition_target not in TERMINALS:
-                report.add("error", "GATE_UNKNOWN_TARGET", f"Gate {gid} targets unknown stage {transition_target}", rel)
+        for target in (gate.get("transitions") or {}).values():
+            if target not in stage_map and target not in TERMINALS:
+                report.add("error", "GATE_UNKNOWN_TARGET", f"Gate {gid} targets unknown stage {target}", rel)
         for evaluator in gate.get("evaluators", []) or []:
             rubric = evaluator.get("rubric")
             if rubric:
@@ -222,9 +204,9 @@ def validate_package(package: str | Path) -> ValidationReport:
             report.add("error", "COMPLETION_UNKNOWN_GATE", f"Completion requires unknown gate: {gid}")
 
     report.summary = {
-        "contract_name": contract_name,
-        "contract_version": execution.get("contract_skill", {}).get("version"),
-        "spec_version": execution.get("contract_skill", {}).get("spec_version"),
+        "enforcement_name": enforcement_name,
+        "package_version": execution.get("enforcement", {}).get("version"),
+        "spec_version": execution.get("enforcement", {}).get("spec_version"),
         "stages": len(stage_ids),
         "gates": len(gate_ids),
         "fallback_mode": execution.get("compatibility", {}).get("fallback_mode"),
@@ -232,18 +214,14 @@ def validate_package(package: str | Path) -> ValidationReport:
     }
     return report
 
-
 def inspect_package(package: str | Path) -> dict[str, Any]:
     root = Path(package).resolve()
     execution = _load_yaml(root / "EXECUTION.yaml")
     return {
         "package": str(root),
-        "contract": execution.get("contract_skill"),
+        "enforcement": execution.get("enforcement"),
         "compatibility": execution.get("compatibility"),
         "state": execution.get("state"),
-        "stages": [
-            {"id": s.get("id"), "gates": s.get("gates", []), "output_schema": s.get("output_schema")}
-            for s in execution.get("stages", [])
-        ],
+        "stages": [{"id": s.get("id"), "gates": s.get("gates", []), "output_schema": s.get("output_schema")} for s in execution.get("stages", [])],
         "completion": execution.get("completion"),
     }

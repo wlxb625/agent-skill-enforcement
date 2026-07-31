@@ -9,15 +9,7 @@
     "path": {"type": "string"},
     "value": {},
     "scope": {"enum": ["user", "team", "project", "task"]},
-    "evidence": {
-      "type": "object",
-      "required": ["source", "text"],
-      "properties": {
-        "source": {"type": "string"},
-        "text": {"type": "string"}
-      },
-      "additionalProperties": true
-    },
+    "evidence": {"type": "object", "required": ["source", "text"], "properties": {"source": {"type": "string"}, "text": {"type": "string"}}, "additionalProperties": true},
     "confidence": {"type": "number", "minimum": 0, "maximum": 1}
   },
   "additionalProperties": false

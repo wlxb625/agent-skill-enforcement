@@ -34,4 +34,4 @@ activate
 
 ## Fallback
 
-A host that cannot enforce the lifecycle should run in `soft-contract` mode and disclose that limitation.
+A host that cannot enforce the lifecycle should run in `soft-enforcement` mode and disclose that limitation.

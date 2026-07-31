@@ -8,14 +8,17 @@ from .validator import inspect_package, validate_package
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(prog="contract-skill")
+    parser = argparse.ArgumentParser(
+        prog="asep",
+        description="Validate and inspect Agent Skill Enforcement Protocol packages.",
+    )
     sub = parser.add_subparsers(dest="command", required=True)
 
-    validate = sub.add_parser("validate", help="Validate a Contract Skill package")
+    validate = sub.add_parser("validate", help="Validate an ASEP Enforced Skill package")
     validate.add_argument("package")
     validate.add_argument("--json", action="store_true", dest="as_json")
 
-    inspect = sub.add_parser("inspect", help="Print a contract summary")
+    inspect = sub.add_parser("inspect", help="Print an ASEP enforcement summary")
     inspect.add_argument("package")
 
     args = parser.parse_args()

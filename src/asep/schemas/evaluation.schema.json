@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/wlxb625/agent-skill-enforcement/schemas/evaluation.schema.json",
+  "title": "Enforced Skill Evaluation",
+  "type": "object",
+  "required": ["evaluation_id", "evaluator_id", "artifact", "attestation", "scores", "evidence", "hard_failures", "status"],
+  "properties": {
+    "evaluation_id": {"type": "string"},
+    "evaluator_id": {"type": "string"},
+    "artifact": {"type": "object", "required": ["id", "sha256"], "properties": {"id": {"type": "string"}, "sha256": {"type": "string"}}, "additionalProperties": true},
+    "rubric_sha256": {"type": "string"},
+    "nonce": {"type": "string"},
+    "attestation": {"type": "object", "required": ["level"], "properties": {"level": {"enum": ["self_assessed", "separate_context", "separate_model", "human_verified"]}, "issuer": {"type": "string"}, "proof": {"type": ["string", "object"]}}, "additionalProperties": true},
+    "scores": {"type": "object", "additionalProperties": {"type": "number"}},
+    "evidence": {"type": "array", "items": {"type": "object", "required": ["claim", "reference"], "properties": {"claim": {"type": "string"}, "reference": {"type": "string"}, "reason": {"type": "string"}}, "additionalProperties": true}},
+    "hard_failures": {"type": "array", "items": {"type": "string"}},
+    "recommendations": {"type": "array", "items": {"type": "string"}},
+    "status": {"enum": ["PASS", "CONDITIONAL", "FAIL", "NOT_APPLICABLE"]}
+  },
+  "additionalProperties": true
+}

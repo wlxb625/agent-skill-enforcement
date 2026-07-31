@@ -1,19 +1,19 @@
-# Execution levels
+# Enforcement levels
 
 ## L0 — Ordinary Skill
 
-Only `SKILL.md` is used. No contract guarantee.
+Only `SKILL.md` is used. No ASEP enforcement claim is allowed.
 
-## L1 — Soft Contract
+## L1 — Declared Enforcement
 
-The model reads `EXECUTION.yaml` and attempts to follow it. State and evaluation may still be model-controlled.
+The model reads `EXECUTION.yaml` and attempts to follow it, but state and evaluation may still be model-controlled.
 
-## L2 — Script-Validated Contract
+## L2 — Script-Enforced
 
-Bundled or host-provided scripts verify integrity, schemas, references, policy patches, and completion. Semantic evaluation may remain weakly attested.
+Bundled or host-provided scripts verify integrity, schemas, references, policy patches, transitions, and completion. Semantic evaluation may remain weakly attested.
 
-## L3 — Host-Enforced Contract
+## L3 — Host-Enforced
 
-The host owns state, transitions, tool permissions, evaluator isolation, audit events, and finalization.
+The host owns state, transitions, tool permissions, evaluator isolation, audit events, gates, and finalization.
 
 A completion receipt must record the actual level used.

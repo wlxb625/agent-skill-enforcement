@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contract-skills.dev/schemas/policy-patch.schema.json",
+  "$id": "https://github.com/wlxb625/agent-skill-enforcement/schemas/policy-patch.schema.json",
   "title": "Adaptive Policy Patch",
   "type": "object",
   "required": [

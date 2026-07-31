@@ -1,29 +1,29 @@
-# Contract Skills Specification 0.1.0-draft
+# Agent Skill Enforcement Protocol (ASEP) 0.2.0-draft
 
 ## 1. Scope
 
-Contract Skills is an optional execution-contract extension for folder-based Agent Skills. A Contract Skill remains a valid Skill package with `SKILL.md`; it adds `EXECUTION.yaml` and related resources that describe execution obligations.
+ASEP is an optional enforcement extension for folder-based Agent Skills. An ASEP package remains an ordinary Skill with `SKILL.md`; it adds `EXECUTION.yaml` and related resources that declare when a lifecycle may advance and when completion may be claimed.
 
 This specification defines:
 
-- policy layers and precedence;
-- stage and transition declarations;
-- validators, evaluators, and gates;
-- applicability and `NOT_APPLICABLE` handling;
-- repair contracts;
-- evaluation attestation;
-- completion receipts;
-- fallback and conformance levels.
+- enforcement metadata and runtime claim levels;
+- stage locks and transition rules;
+- required artifacts and deterministic validation;
+- semantic evaluation and attestation;
+- blocking gates and applicability;
+- repair and return routes;
+- protected rules and bounded adaptation;
+- completion receipts and audit evidence.
 
-It does not define domain quality standards.
+ASEP does not define domain quality standards. A screenplay Skill, audit Skill, coding Skill, or research Skill supplies its own evaluators and gate criteria.
 
 ## 2. Normative language
 
-The terms **MUST**, **MUST NOT**, **SHOULD**, **SHOULD NOT**, and **MAY** are normative.
+The terms MUST, MUST NOT, REQUIRED, SHOULD, SHOULD NOT, and MAY are normative.
 
-## 3. Required files
+## 3. Required package files
 
-A Contract Skill MUST contain:
+An Enforced Skill MUST contain:
 
 ```text
 SKILL.md
@@ -31,252 +31,177 @@ EXECUTION.yaml
 constitution/immutable.yaml
 ```
 
-It SHOULD contain:
+It MAY contain adaptive policy, stage instructions, artifact schemas, validators, evaluators, gate definitions, state scripts, references, and templates.
 
-```text
-adaptive/default-policy.yaml
-schemas/
-gates/
-stages/
-```
+## 4. Enforcement declaration
 
-## 4. Identity
-
-`EXECUTION.yaml` MUST declare:
+`EXECUTION.yaml` MUST contain an `enforcement` object:
 
 ```yaml
-contract_skill:
-  spec_version: "0.1.0-draft"
-  kind: contract-skill
+enforcement:
+  protocol: ASEP
+  spec_version: "0.2.0-draft"
+  kind: enforced-agent-skill
   name: example-skill
-  version: "0.1.0"
+  version: "0.2.0"
 ```
 
-`name` SHOULD match the Skill name in `SKILL.md`.
+`kind` MUST be `enforced-agent-skill`. A runtime MUST NOT claim ASEP execution when this declaration is absent or invalid.
 
 ## 5. Compatibility and fallback
 
-A package MUST declare a fallback mode:
+A package declares how it behaves when ASEP is unsupported:
 
 ```yaml
 compatibility:
   ordinary_skill: true
-  fallback_mode: soft-contract
+  fallback_mode: soft-enforcement
+  minimum_execution_level: L1
 ```
 
-Supported fallback modes:
+Allowed fallback modes:
 
-- `ordinary-skill`: ignore Contract Skills extension;
-- `soft-contract`: expose contract instructions to the model without claiming hard enforcement;
-- `block`: refuse execution when required host capabilities are unavailable.
+- `ordinary-skill`: ignore ASEP resources and use `SKILL.md` only;
+- `soft-enforcement`: expose the obligations to the model without claiming host enforcement;
+- `block`: refuse execution below the required level.
 
-A host MUST report the actual execution level used.
+A runtime MUST report the effective level:
 
-## 6. Policy layers
+- `L0`: ordinary Skill only;
+- `L1`: obligations are declared but transitions are model-managed;
+- `L2`: bundled scripts or a runner can reject invalid transitions and completion;
+- `L3`: the host owns state, permissions, evaluator isolation, gates, and finalization.
 
-The precedence order is:
+A runtime MUST NOT claim a higher level than it actually provided.
+
+## 6. Enforcement lifecycle
+
+The canonical lifecycle is:
 
 ```text
-immutable > adaptive > task > model-local
+activate → prepare → submit → validate → evaluate → gate → transition → finalize
 ```
 
-The immutable layer MUST define protected paths and adaptive permissions.
+A host MAY implement this using a state machine, graph, hooks, scripts, or another execution engine. The semantics, not a specific engine, are normative.
 
-The adaptive layer MUST NOT:
+## 7. Stage locks
 
-- disable a required stage;
-- reduce a protected threshold;
-- remove a required gate;
-- increase prohibited permissions;
-- alter completion requirements;
-- modify integrity rules.
+`state.start_stage` identifies the initial authorized stage. Each stage MAY declare instructions, input/output schemas, allowed tools, gates, and repair limits.
 
-Adaptive changes SHOULD be submitted as policy patches with evidence.
+A conforming L2 or L3 runtime MUST reject:
 
-## 7. Rule enforcement classes
+- submission to a stage that is not currently authorized;
+- progression when required output is missing or invalid;
+- progression when a required gate did not return `PASS`;
+- finalization before completion requirements are satisfied.
 
-Every rule SHOULD declare one of:
+## 8. Validators, evaluators, and gates
 
-- `hard`: violation blocks execution;
-- `gate`: contributes to a transition decision;
-- `preference`: influences generation or ranking but does not block;
-- `guidance`: advisory method or heuristic.
+ASEP separates three concepts:
 
-Hosts MUST NOT silently promote guidance into a hard rule or demote a hard rule into guidance.
+### 8.1 Validator
 
-## 8. Stages
+A validator checks deterministic facts: schema, counts, references, file existence, hashes, stage identity, permission declarations, or other mechanically testable conditions.
 
-Each stage MUST have a unique `id` and MAY declare:
+### 8.2 Evaluator
 
-- stage-scoped instruction file;
-- input schema;
-- output schema;
-- required gates;
-- allowed tools;
-- maximum repair rounds.
+An evaluator judges semantic quality. It SHOULD cite evidence locations and MUST declare an attestation level:
 
-A host SHOULD expose only the current stage instructions and required context.
+```text
+self_assessed < separate_context < separate_model < human_verified
+```
 
-## 9. State ownership
+### 8.3 Gate
 
-The contract MUST declare who owns state:
+A gate combines validator and evaluator results and returns:
+
+- `PASS`: progression is permitted;
+- `CONDITIONAL`: repair is required before progression;
+- `FAIL`: progression is blocked and execution returns or terminates according to the declared route;
+- `NOT_APPLICABLE`: allowed only when the gate declares applicability rules and supplies evidence that those rules are unmet.
+
+A hard failure MUST override aggregate scores.
+
+## 9. Gate composition
+
+Gates MAY use:
+
+- `ALL`: every required component passes;
+- `ANY`: at least one valid path passes;
+- `WEIGHTED`: a minimum aggregate score is met;
+- hard-failure override.
+
+Domain rubrics are not part of the universal protocol.
+
+## 10. Repair routes
+
+A `CONDITIONAL` or `FAIL` result SHOULD produce a repair contract containing:
 
 ```yaml
-state:
-  controlled_by: host | bundled-script | model
+repair:
+  failed_dimensions: []
+  preserve: []
+  must_change: []
+  return_to_stage: stage-id
 ```
 
-`model` ownership is allowed only for L1 soft-contract mode and MUST NOT be described as hard enforcement.
+A runtime MUST follow the declared transition rather than silently advancing to a later stage.
 
-## 10. Validators
+## 11. Protected rules and bounded adaptation
 
-Validators inspect deterministic or externally verifiable properties. Common validator types include:
+ASEP MAY use layered policies, but layering is a protection mechanism rather than the primary abstraction.
 
-- schema;
-- count;
-- reference;
-- hash;
-- file;
-- command;
-- custom script.
+The immutable layer protects enforcement-critical fields such as required stages, required gates, thresholds, allowed transitions, permissions, and completion conditions. Adaptive and task policies MAY specialize behavior but MUST NOT weaken protected rules.
 
-A validator MUST return `valid: true|false` and machine-readable issue codes.
+Recommended priority:
 
-## 11. Evaluators
-
-Evaluators inspect semantic or professional quality. An evaluation SHOULD include:
-
-- evaluator identity;
-- target artifact identity and hash;
-- rule/rubric hash;
-- attestation level;
-- scores;
-- evidence references;
-- hard failures;
-- recommendations;
-- final status.
-
-Evaluators SHOULD bind claims to the smallest available artifact location.
-
-## 12. Evaluation attestation
-
-Supported attestation levels:
-
-1. `self_assessed`;
-2. `separate_context`;
-3. `separate_model`;
-4. `human_verified`.
-
-A contract MAY require a minimum attestation level. A host MUST NOT claim a stronger level than it can prove.
-
-## 13. Gates
-
-A gate combines validator and evaluator results and returns one of:
-
-- `PASS`;
-- `CONDITIONAL`;
-- `FAIL`;
-- `NOT_APPLICABLE`.
-
-A required gate MUST NOT be treated as passed when its status is missing.
-
-A gate MAY use:
-
-- `ALL` logic;
-- `ANY` logic;
-- weighted scoring;
-- hard-failure override;
-- custom deterministic decision logic.
-
-## 14. Applicability
-
-Conditional gates MUST declare applicability rules. `NOT_APPLICABLE` MUST be supported by evidence, not only by a model assertion.
-
-Example:
-
-```yaml
-applicability:
-  when:
-    artifact_fact: has_dialogue
-    equals: true
-  evidence:
-    validator: dialogue-counter
+```text
+immutable enforcement rules
+  > adaptive user/project policy
+    > current task policy
+      > model-local decisions
 ```
 
-## 15. Transitions
+Policy updates SHOULD be expressed as validated patches and checked for protected-path overlap.
 
-All transition targets MUST refer to a declared stage or terminal state. Recommended terminal states:
+## 12. Completion
 
-- `COMPLETE`;
-- `FAILED`;
-- `BLOCKED`.
+Completion MUST be receipt-backed. A receipt MUST include:
 
-A required gate failure MUST route to a repair stage, an upstream stage, or a terminal failure state.
+- protocol and specification version;
+- package and artifact identity;
+- effective enforcement level;
+- completed required stages;
+- required gate results;
+- attestation levels;
+- artifact hashes or equivalent evidence;
+- final marker `ASEP_COMPLETE`.
 
-## 16. Repair contracts
+A runtime MUST NOT issue `ASEP_COMPLETE` when a required stage or gate is missing, failed, stale, or below the declared minimum attestation.
 
-A repair contract SHOULD include:
+## 13. Audit events
 
-- failed dimensions;
-- evidence;
-- `must_change`;
-- `preserve`;
-- return stage;
-- maximum rounds.
+A runtime SHOULD record activation, stage opening, submission, validation, evaluation, gate decision, repair, transition, and finalization events. Audit logs SHOULD bind events to artifact versions or hashes.
 
-Repair instructions SHOULD avoid rewriting valid parts without cause.
+## 14. Security
 
-## 17. Completion
+Third-party scripts are untrusted code. Hosts SHOULD use least privilege, sandbox execution, restrict network/filesystem access, and require explicit permission grants. Declaring a tool or permission in `EXECUTION.yaml` does not grant it.
 
-A task is complete only when all declared completion requirements are satisfied.
+## 15. Conformance
 
-A completion receipt MUST include:
+A package-level validator can verify structure, references, graphs, policy boundaries, and receipt requirements. Strong semantic guarantees require host-side evaluator isolation or human verification.
 
-- contract identity and version;
-- task identity;
-- actual execution level;
-- completed stages;
-- gate statuses;
-- artifact hashes;
-- attestation summary;
-- terminal status;
-- timestamp.
+A conforming implementation SHOULD publish valid and invalid fixtures and MUST distinguish package conformance from actual runtime enforcement.
 
-A receipt MUST NOT claim `CONTRACT_COMPLETE` when required gates are missing, failed, or unverified.
+## 16. Legacy draft migration
 
-## 18. Audit events
+`Contract Skills 0.1.0-draft` was the early project name. ASEP 0.2.0-draft changes:
 
-Hosts SHOULD emit append-only events for:
+- project name to Agent Skill Enforcement;
+- top-level `contract_skill` to `enforcement`;
+- `kind: contract-skill` to `kind: enforced-agent-skill`;
+- CLI `contract-skill` to `asep`;
+- completion marker `CONTRACT_COMPLETE` to `ASEP_COMPLETE`;
+- fallback `soft-contract` to `soft-enforcement`.
 
-- activation;
-- integrity validation;
-- stage preparation;
-- artifact submission;
-- validator result;
-- evaluator result;
-- gate decision;
-- repair;
-- policy patch;
-- transition;
-- completion.
-
-## 19. Integrity
-
-Packages MAY include hashes or signatures for protected files. Hosts that claim protected immutable policy MUST verify integrity before execution.
-
-## 20. Conformance levels
-
-- **L0:** ordinary Skill only;
-- **L1:** soft contract;
-- **L2:** script-validated contract;
-- **L3:** host-enforced contract.
-
-Conformance is capability-based, not package-author-claimed.
-
-## 21. Security
-
-Hosts SHOULD treat third-party scripts as untrusted code, enforce least privilege, and isolate package execution. A Contract Skill MUST NOT gain permissions merely because it declares them.
-
-## 22. Semantic limitation
-
-Structural conformance does not prove semantic quality. A syntactically valid high-scoring evaluation can still be dishonest. Contracts SHOULD use attestation, independent evaluation, adversarial checks, and human review proportional to risk.
+See `docs/migration-from-contract-skills.md`.

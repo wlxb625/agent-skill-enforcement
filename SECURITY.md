@@ -1,6 +1,6 @@
 # Security policy
 
-Contract Skills may contain executable scripts. Treat third-party packages as untrusted code.
+Agent Skill Enforcement may contain executable scripts. Treat third-party packages as untrusted code.
 
 Hosts should:
 
