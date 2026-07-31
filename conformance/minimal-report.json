@@ -1,0 +1,14 @@
+{
+  "package": "/mnt/data/contract-skills-v0.1.0-draft/examples/minimal-contract-skill",
+  "valid": true,
+  "summary": {
+    "contract_name": "evidence-brief",
+    "contract_version": "0.1.0",
+    "spec_version": "0.1.0-draft",
+    "stages": 3,
+    "gates": 2,
+    "fallback_mode": "soft-contract",
+    "state_owner": "bundled-script"
+  },
+  "findings": []
+}

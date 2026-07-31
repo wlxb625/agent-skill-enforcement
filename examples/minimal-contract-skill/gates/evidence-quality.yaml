@@ -1,0 +1,29 @@
+id: evidence-quality
+description: Semantic review of whether cited evidence actually supports each claim.
+stage: review
+required: true
+validators:
+  - id: review-schema
+    type: schema
+    config:
+      schema: schemas/review.schema.json
+evaluators:
+  - id: evidence-reviewer
+    type: semantic
+    rubric: evaluators/evidence-review.md
+    minimum_attestation: self_assessed
+    required: true
+logic: ALL
+decision:
+  hard_fail_override: true
+  pass_when:
+    unsupported_claims: 0
+    coverage_minimum: 1.0
+transitions:
+  PASS: final
+  CONDITIONAL: draft
+  FAIL: FAILED
+repair:
+  return_stage: draft
+  must_change: [unsupported or overstated claims]
+  preserve: [claims already proven by evidence]

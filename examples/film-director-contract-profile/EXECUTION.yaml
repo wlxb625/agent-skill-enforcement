@@ -1,0 +1,57 @@
+contract_skill:
+  spec_version: "0.1.0-draft"
+  kind: contract-skill
+  name: film-director-contract-profile
+  version: "0.1.0"
+  description: Domain-profile example for film narrative development.
+compatibility:
+  ordinary_skill: true
+  fallback_mode: soft-contract
+  minimum_execution_level: L1
+policy_layers:
+  immutable: constitution/immutable.yaml
+  adaptive:
+    default: adaptive/default-policy.yaml
+    schema: adaptive/policy.schema.json
+    patch_schema: schemas/policy-patch.schema.json
+state:
+  controlled_by: bundled-script
+  start_stage: concepts
+stages:
+  - id: concepts
+    instruction: stages/concepts.md
+    output_schema: schemas/concepts.schema.json
+    gates: [concept-quality]
+  - id: treatment
+    instruction: stages/treatment.md
+    output_schema: schemas/treatment.schema.json
+    gates: [meaning-necessity, climax-force, character-age-fit]
+  - id: script
+    instruction: stages/script.md
+    output_schema: schemas/script.schema.json
+    gates: [script-quality]
+gates:
+  - gates/concept-quality.yaml
+  - gates/meaning-necessity.yaml
+  - gates/climax-force.yaml
+  - gates/character-age-fit.yaml
+  - gates/script-quality.yaml
+transitions:
+  concepts:
+    PASS: treatment
+    CONDITIONAL: concepts
+    FAIL: FAILED
+  treatment:
+    PASS: script
+    CONDITIONAL: treatment
+    FAIL: concepts
+  script:
+    PASS: COMPLETE
+    CONDITIONAL: script
+    FAIL: treatment
+completion:
+  terminal_stage: COMPLETE
+  receipt_schema: schemas/completion-receipt.schema.json
+  requires_stages: [concepts, treatment, script]
+  requires_gates: [concept-quality, meaning-necessity, climax-force, character-age-fit, script-quality]
+  minimum_attestation: self_assessed

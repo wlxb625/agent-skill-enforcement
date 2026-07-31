@@ -1,0 +1,27 @@
+id: meaning-necessity
+description: Domain gate; not part of the universal standard.
+stage: treatment
+required: true
+validators:
+  - id: treatment-schema
+    type: schema
+    config: {schema: schemas/treatment.schema.json}
+evaluators:
+  - id: meaning-reviewer
+    type: semantic
+    rubric: evaluators/meaning.md
+    minimum_attestation: self_assessed
+    required: true
+logic: ANY
+decision:
+  hard_fail_override: true
+  pass_when:
+    ordinary_narrative_score: 80
+    or_experimental_form_score: 80
+transitions:
+  PASS: script
+  CONDITIONAL: treatment
+  FAIL: concepts
+repair:
+  return_stage: treatment
+  must_change: [human dilemma or formal-experience necessity]

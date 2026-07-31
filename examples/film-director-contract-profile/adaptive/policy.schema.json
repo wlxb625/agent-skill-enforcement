@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "version",
+    "scope",
+    "preferences"
+  ],
+  "properties": {
+    "version": {
+      "type": "string"
+    },
+    "scope": {
+      "enum": [
+        "user",
+        "team",
+        "project",
+        "task"
+      ]
+    },
+    "preferences": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true
+}

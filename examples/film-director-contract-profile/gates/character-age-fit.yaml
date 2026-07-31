@@ -1,0 +1,21 @@
+id: character-age-fit
+description: Domain gate balancing audience identification and story credibility.
+stage: treatment
+required: true
+validators: []
+evaluators:
+  - id: age-fit-reviewer
+    type: semantic
+    rubric: evaluators/age-fit.md
+    minimum_attestation: self_assessed
+    required: true
+logic: ALL
+decision:
+  hard_fail_override: true
+  pass_when: {minimum_score: 80}
+transitions:
+  PASS: script
+  CONDITIONAL: treatment
+  FAIL: concepts
+repair:
+  return_stage: treatment

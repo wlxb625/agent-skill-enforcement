@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contract-skills.dev/schemas/constitution.schema.json",
+  "title": "Immutable Contract Policy",
+  "type": "object",
+  "required": [
+    "version",
+    "priority",
+    "protected_paths",
+    "hard_constraints",
+    "adaptive_permissions"
+  ],
+  "properties": {
+    "version": {
+      "type": "string"
+    },
+    "priority": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "string"
+      }
+    },
+    "protected_paths": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "hard_constraints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "enforcement",
+          "description"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "enforcement": {
+            "const": "hard"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "adaptive_permissions": {
+      "type": "object",
+      "required": [
+        "allowed_paths",
+        "denied_operations"
+      ],
+      "properties": {
+        "allowed_paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "denied_operations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "integrity": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,9 @@
+version: "0.1.0"
+scope: user
+preferences:
+  genre: open
+  tone: natural
+  audience: general
+  rejected_patterns: []
+history: []
+extensions: {}

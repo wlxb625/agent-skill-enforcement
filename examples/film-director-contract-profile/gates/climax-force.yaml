@@ -1,0 +1,23 @@
+id: climax-force
+description: Domain gate for a genuine dramatic peak.
+stage: treatment
+required: true
+validators: []
+evaluators:
+  - id: climax-reviewer
+    type: semantic
+    rubric: evaluators/climax.md
+    minimum_attestation: self_assessed
+    required: true
+logic: ALL
+decision:
+  hard_fail_override: true
+  pass_when: {minimum_score: 80, escalation_count_minimum: 2}
+transitions:
+  PASS: script
+  CONDITIONAL: treatment
+  FAIL: concepts
+repair:
+  return_stage: treatment
+  preserve: [approved theme and character identity]
+  must_change: [pressure escalation, competing values, on-screen cost]

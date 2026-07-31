@@ -1,0 +1,27 @@
+id: concept-quality
+description: Candidate count, differentiation, and concept-quality gate.
+stage: concepts
+required: true
+validators:
+  - id: concepts-schema
+    type: schema
+    config: {schema: schemas/concepts.schema.json}
+  - id: candidate-count
+    type: count
+    config: {path: candidates, minimum: 10}
+evaluators:
+  - id: concept-reviewer
+    type: semantic
+    rubric: evaluators/script.md
+    minimum_attestation: self_assessed
+    required: true
+logic: ALL
+decision:
+  hard_fail_override: true
+  pass_when: {minimum_score: 80}
+transitions:
+  PASS: treatment
+  CONDITIONAL: concepts
+  FAIL: FAILED
+repair:
+  return_stage: concepts

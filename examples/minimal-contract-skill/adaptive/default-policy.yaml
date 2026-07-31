@@ -1,0 +1,8 @@
+version: "0.1.0"
+scope: user
+preferences:
+  tone: concise
+  length: medium
+  terminology: plain-language
+history: []
+extensions: {}

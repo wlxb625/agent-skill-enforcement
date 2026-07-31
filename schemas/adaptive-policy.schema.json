@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contract-skills.dev/schemas/adaptive-policy.schema.json",
+  "title": "Adaptive Policy",
+  "type": "object",
+  "required": [
+    "version",
+    "scope",
+    "preferences"
+  ],
+  "properties": {
+    "version": {
+      "type": "string"
+    },
+    "scope": {
+      "enum": [
+        "user",
+        "team",
+        "project",
+        "task"
+      ]
+    },
+    "preferences": {
+      "type": "object"
+    },
+    "history": {
+      "type": "array"
+    },
+    "extensions": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true
+}
