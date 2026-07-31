@@ -1,4 +1,4 @@
-# Agent Skill Enforcement｜让AI真正按照Skill来做
+# Agent Skill Enforcement
 
 **解决“明明调用了Skill，结果却还是模型默认套路”的问题。**
 
